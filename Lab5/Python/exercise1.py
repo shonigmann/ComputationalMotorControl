@@ -96,7 +96,7 @@ def exercise1a():
     plt.title('Isometric muscle experiment')
     plt.xlabel('Length [m]')
     plt.ylabel('Muscle Force [N]')
-    plt.legend(loc='upper left')
+    plt.legend(loc='upper right')
     plt.grid()
     
 def exercise1b():
