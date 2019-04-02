@@ -101,6 +101,101 @@ def exercise1a():
     
 def exercise1b():
     
+    a = 1
+    b = 2
+    
+def exercise1c():
+    """describe how fiber length influences the force-length curve. Compare 
+    a muscle comprised of short muscle fibers to a muscle comprised of 
+    long muscle fibers. Change the parameter, you can use 
+    system_parameters.py::MuscleParameters before instantiating the muscle
+    No more than 2 plots are required.
+    """
+    
+    # Defination of muscles
+    parameters = MuscleParameters()
+    pylog.warning("Loading default muscle parameters")
+    pylog.info(parameters.showParameters())
+    pylog.info("Use the parameters object to change the muscle parameters")
+    
+    # Create muscle object
+    muscle = Muscle(parameters)
+    
+    pylog.warning("Isometric muscle contraction to be completed")
+    
+    # Instatiate isometric muscle system
+    sys = IsometricMuscleSystem()
+    
+    # Add the muscle to the system
+    sys.add_muscle(muscle)
+    
+    # You can still access the muscle inside the system by doing
+    # >>> sys.muscle.L_OPT # To get the muscle optimal length
+    muscle_lengths = np.arange(.02,.22,.04)
+    
+    max_muscle_active_forces = []
+    max_muscle_passive_forces = []
+    max_total_force = []
+    
+    # Evalute for a single muscle stretch
+    for muscle_length in muscle_lengths:
+       
+        parameters.l_opt = muscle_length
+        muscle = Muscle(parameters)
+    
+        pylog.warning("Isometric muscle contraction to be completed")
+        
+        # Instatiate isometric muscle system
+        sys = IsometricMuscleSystem()
+        
+        # Add the muscle to the system
+        sys.add_muscle(muscle)
+        muscle_stretches = np.arange(muscle_length,4*muscle_length,3*muscle_length/30)
+
+        muscle_active_forces = []
+        muscle_passive_forces = []
+        total_force = []
+        
+        # Evalute for a single muscle stretch
+        for muscle_stretch in muscle_stretches:
+           
+            # Evalute for a single muscle stimulation
+            muscle_stimulation = 1.
+        
+            # Set the initial condition
+            x0 = [0.0, sys.muscle.L_OPT]
+            # x0[0] --> muscle stimulation intial value
+            # x0[1] --> muscle contracticle length initial value
+        
+            # Set the time for integration
+            t_start = 0.0
+            t_stop = 0.3
+            time_step = 0.001
+        
+            time = np.arange(t_start, t_stop, time_step)
+        
+            # Run the integration
+            result = sys.integrate(x0=x0,
+                                   time=time,
+                                   time_step=time_step,
+                                   stimulation=muscle_stimulation,
+                                   muscle_length=muscle_stretch)
+            
+            muscle_active_forces.append(result.active_force[-1])
+            muscle_passive_forces.append(result.passive_force[-1])
+            total_force.append(result.active_force[-1]+result.passive_force[-1])
+            
+        # Plotting
+        plt.figure('Isometric muscle experiment. L_opt = '+str(muscle_length))
+        plt.plot(muscle_stretches, muscle_active_forces, label='active')
+        plt.plot(muscle_stretches, muscle_passive_forces, label='passive')
+        plt.plot(muscle_stretches, total_force, label='total')
+        plt.title('Isometric muscle experiment')
+        plt.xlabel('Length [m]')
+        plt.ylabel('Muscle Force [N]')
+        plt.legend(loc='upper right')
+        plt.grid()
+    
 
 def exercise1d():
     """ Exercise 1d
@@ -178,7 +273,8 @@ def exercise1d():
 
 def exercise1():
 #    exercise1a()
-    exercise1b()
+#    exercise1b()
+    exercise1c()
 #    exercise1d()
 
     if DEFAULT["save_figures"] is False:
