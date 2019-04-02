@@ -131,11 +131,12 @@ def exercise1c():
     
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
-    muscle_lengths = np.arange(.02,.22,.04)
+    muscle_lengths = np.arange(.1,.26,.02)
     
     max_muscle_active_forces = []
     max_muscle_passive_forces = []
     max_total_force = []
+    max_force_stretch = []
     
     # Evalute for a single muscle stretch
     for muscle_length in muscle_lengths:
@@ -150,7 +151,11 @@ def exercise1c():
         
         # Add the muscle to the system
         sys.add_muscle(muscle)
-        muscle_stretches = np.arange(muscle_length,4*muscle_length,3*muscle_length/30)
+        if muscle_length<.16:
+            start_stretch_length = .16
+        else:
+            start_stretch_length = muscle_length
+        muscle_stretches = np.arange(start_stretch_length,1.2*muscle_length+.16,(1.2*muscle_length+.16-start_stretch_length)/40)
 
         muscle_active_forces = []
         muscle_passive_forces = []
@@ -185,17 +190,45 @@ def exercise1c():
             muscle_passive_forces.append(result.passive_force[-1])
             total_force.append(result.active_force[-1]+result.passive_force[-1])
             
+        max_muscle_active_forces.append(max(muscle_active_forces))
+        
+        active_max_index = muscle_active_forces.index(max(muscle_active_forces))
+        max_muscle_passive_forces.append(muscle_active_forces[active_max_index])
+        max_total_force.append(muscle_active_forces[active_max_index])
+        max_force_stretch.append(muscle_stretches[active_max_index])
+        
         # Plotting
         plt.figure('Isometric muscle experiment. L_opt = '+str(muscle_length))
         plt.plot(muscle_stretches, muscle_active_forces, label='active')
         plt.plot(muscle_stretches, muscle_passive_forces, label='passive')
         plt.plot(muscle_stretches, total_force, label='total')
-        plt.title('Isometric muscle experiment')
-        plt.xlabel('Length [m]')
+        plt.title('Isometric muscle experiment 1C, L_opt = '+str(muscle_length))
+        plt.xlabel('Stretch Length [m]')
         plt.ylabel('Muscle Force [N]')
-        plt.legend(loc='upper right')
+        plt.legend(loc='upper left')
         plt.grid()
-    
+        
+    # Plot max vals
+    plt.figure('Isometric muscle experiment max Force')
+    plt.plot(muscle_lengths, max_muscle_active_forces, label='active')
+    #plt.plot(muscle_lengths, max_muscle_passive_forces, label='passive')
+    #plt.plot(muscle_lengths, max_total_force, label='total')
+    plt.title('Isometric muscle experiment 1C, Max')
+    plt.xlabel('Muscle Optimal Length [m]')
+    plt.ylabel('Max Muscle Force [N]')
+    plt.legend(loc='upper left')
+    plt.grid()
+
+    # Plot max stretch lengths of max vals
+    plt.figure('Isometric muscle experiment max Force stretch')
+    plt.plot(muscle_lengths, max_force_stretch, label='active')
+    #plt.plot(muscle_lengths, max_muscle_passive_forces, label='passive')
+    #plt.plot(muscle_lengths, max_total_force, label='total')
+    plt.title('Isometric muscle experiment 1C, Max Stretch')
+    plt.xlabel('Muscle Optimal Length [m]')
+    plt.ylabel('Muscle Stretch of Max Force [m]')
+    plt.legend(loc='upper left')
+    plt.grid()
 
 def exercise1d():
     """ Exercise 1d
