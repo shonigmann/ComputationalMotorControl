@@ -89,11 +89,11 @@ def exercise1a():
         total_force.append(result.active_force[-1]+result.passive_force[-1])
         
     # Plotting
-    plt.figure('Isometric muscle experiment')
+    plt.figure('Isometric Muscle: Stretch Length vs Force')
     plt.plot(muscle_stretches, muscle_active_forces, label='active')
     plt.plot(muscle_stretches, muscle_passive_forces, label='passive')
     plt.plot(muscle_stretches, total_force, label='total')
-    plt.title('Isometric muscle experiment')
+    plt.title('Isometric Muscle: Stretch Length vs Force')
     plt.xlabel('Length [m]')
     plt.ylabel('Muscle Force [N]')
     plt.legend(loc='upper right')
@@ -101,8 +101,103 @@ def exercise1a():
     
 def exercise1b():
     
-    a = 1
-    b = 2
+    """ Exercise 1a
+    The goal of this exercise is to understand the relationship
+    between muscle length and tension.
+    Here you will re-create the isometric muscle contraction experiment.
+    To do so, you will have to keep the muscle at a constant length and
+    observe the force while stimulating the muscle at a constant activation."""
+
+    # Defination of muscles
+    parameters = MuscleParameters()
+    pylog.warning("Loading default muscle parameters")
+    pylog.info(parameters.showParameters())
+    pylog.info("Use the parameters object to change the muscle parameters")
+
+    # Create muscle object
+    muscle = Muscle(parameters)
+
+    pylog.warning("Isometric muscle contraction to be completed")
+
+    # Instatiate isometric muscle system
+    sys = IsometricMuscleSystem()
+
+    # Add the muscle to the system
+    sys.add_muscle(muscle)
+
+    # You can still access the muscle inside the system by doing
+    # >>> sys.muscle.L_OPT # To get the muscle optimal length
+    stimulations = np.arange(.0,1.0,.03)
+    stretches = np.arange(.12,.36,.06) #default length is 0.24
+
+    for stretch in stretches:
+        # Evalute for a single muscle stretch
+        muscle_active_forces = []
+        muscle_passive_forces = []
+        total_force = []
+        for stimulation in stimulations:
+           
+            # Evalute for a single muscle stimulation
+            muscle_stimulation = stimulation
+        
+            # Set the initial condition
+            x0 = [0.0, sys.muscle.L_OPT]
+            # x0[0] --> muscle stimulation intial value
+            # x0[1] --> muscle contracticle length initial value
+        
+            # Set the time for integration
+            t_start = 0.0
+            t_stop = 0.3
+            time_step = 0.001
+        
+            time = np.arange(t_start, t_stop, time_step)
+        
+            # Run the integration
+            result = sys.integrate(x0=x0,
+                                   time=time,
+                                   time_step=time_step,
+                                   stimulation=muscle_stimulation,
+                                   muscle_length=stretch)
+            
+            muscle_active_forces.append(result.active_force[-1])
+            muscle_passive_forces.append(result.passive_force[-1])
+            total_force.append(result.active_force[-1]+result.passive_force[-1])
+            
+#            # Plotting results of individual trials to verify steady state assumption
+#            plt.figure('Force over time with different stimulations and lengths %.2f' %stretch)
+#            plt.plot(time, result.active_force, label='Active: Stim = %.2f'%stimulation + ' L = %.2f'%stretch)
+#            plt.plot(time, result.passive_force, label='Passive: Stim = %.2f'%stimulation + ' L = %.2f'%stretch)
+#            plt.plot(time, result.active_force+result.passive_force, label='Net: Stim = %.2f'%stimulation + ' L = %.2f'%stretch)
+#            plt.title('Force over time with different stimulations and lengths')
+#            plt.xlabel('Time [s]')
+#            plt.ylabel('Active Muscle Force [N]')
+#            plt.legend(loc='upper right')
+#            plt.grid()
+            
+        # Plotting
+        plt.figure('Isometric Muscle: Stimulation vs Force')
+        plt.subplot(3,1,1)
+        plt.plot(stimulations, muscle_active_forces, label='Stretch = %.2f'%stretch)
+        plt.title('Isometric Muscle: Stimulation vs Force')
+        plt.xlabel('Stimulation')
+        plt.ylabel('Active Muscle Force [N]')
+        plt.legend(loc='upper right')
+        plt.grid()
+        
+        plt.subplot(3,1,2)
+        plt.plot(stimulations, muscle_passive_forces, label='Stretch = %.2f'%stretch)
+        plt.xlabel('Stimulation')
+        plt.ylabel('Passive Muscle Force [N]')
+        plt.legend(loc='upper right')
+        plt.grid()
+        
+        plt.subplot(3,1,3)
+        plt.plot(stimulations, total_force, label='Stretch = %.2f'%stretch)
+        plt.xlabel('Stimulation')
+        plt.ylabel('Total Muscle Force [N]')
+        plt.legend(loc='upper right')
+        plt.grid()
+        
     
 def exercise1c():
     """describe how fiber length influences the force-length curve. Compare 
@@ -131,7 +226,7 @@ def exercise1c():
     
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
-    muscle_lengths = np.arange(.1,.26,.02)
+    muscle_lengths = np.arange(.1,.26,.03)
     
     max_muscle_active_forces = []
     max_muscle_passive_forces = []
@@ -197,14 +292,32 @@ def exercise1c():
         max_total_force.append(muscle_active_forces[active_max_index])
         max_force_stretch.append(muscle_stretches[active_max_index])
         
-        # Plotting
-        plt.figure('Isometric muscle experiment. L_opt = '+str(muscle_length))
-        plt.plot(muscle_stretches, muscle_active_forces, label='active')
-        plt.plot(muscle_stretches, muscle_passive_forces, label='passive')
-        plt.plot(muscle_stretches, total_force, label='total')
-        plt.title('Isometric muscle experiment 1C, L_opt = '+str(muscle_length))
+        # Plotting max force for each muscle length over different stretch values. Uncomment to see (adds ~8 plots)
+#        plt.figure('Isometric muscle experiment. L_opt = %.2f'%(muscle_length))
+#        plt.plot(muscle_stretches, muscle_active_forces, label='active')
+#        plt.plot(muscle_stretches, muscle_passive_forces, label='passive')
+#        plt.plot(muscle_stretches, total_force, label='total')
+#        plt.title('Isometric muscle experiment 1C, L_opt = %.2f'%(muscle_length))
+#        plt.xlabel('Stretch Length [m]')
+#        plt.ylabel('Muscle Force [N]')
+#        plt.legend(loc='upper left')
+#        plt.grid()
+        
+        # Plotting active on its own
+        plt.figure('Isometric muscle experiment, Active Force')
+        plt.plot(muscle_stretches, muscle_active_forces, label=('L_opt = %.2f' %(muscle_length)))
+        plt.title('Isometric muscle experiment: Active Force vs L_Opt')
         plt.xlabel('Stretch Length [m]')
-        plt.ylabel('Muscle Force [N]')
+        plt.ylabel('Active Muscle Force [N]')
+        plt.legend(loc='upper left')
+        plt.grid()
+        
+        # Plotting passive on its own
+        plt.figure('Isometric muscle experiment, Passive Force')
+        plt.plot(muscle_stretches, muscle_passive_forces, label=('L_opt = %.2f'%(muscle_length)))
+        plt.title('Isometric muscle experiment: Passive Force vs L_Opt')
+        plt.xlabel('Stretch Length [m]')
+        plt.ylabel('Passive Muscle Force [N]')
         plt.legend(loc='upper left')
         plt.grid()
         
