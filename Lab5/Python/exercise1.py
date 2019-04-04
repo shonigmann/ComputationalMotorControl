@@ -1,6 +1,12 @@
 """ Lab 5 - Exercise 1 """
 
 import matplotlib.pyplot as plt
+
+#import plotly.plotly as py
+#import plotly.figure_factory as FF
+#from scipy.spatial import Delaunay
+from matplotlib import cm
+
 import numpy as np
 
 import cmc_pylog as pylog
@@ -149,9 +155,15 @@ def exercise1b():
 
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
-    stimulations = np.arange(.0,1.0,.03)
-    stretches = np.arange(.12,.30,.06) #default length is 0.24
-
+    stimulations = np.arange(.0,1.0,.02)
+    stretches = np.arange(.12,.36,.05) #default length is 0.24
+    
+    allStretches= []
+    allStims = []
+    allActForces = []
+    allPassForces = []
+    allNetForces = []
+    
     for stretch in stretches:
         # Evalute for a single muscle stretch
         muscle_active_forces = []
@@ -186,6 +198,11 @@ def exercise1b():
             muscle_passive_forces.append(result.passive_force[-1])
             total_force.append(result.active_force[-1]+result.passive_force[-1])
             l_ce.append(result.l_ce[-1])
+            allStretches.append(stretch)
+            allStims.append(stimulation)
+            allActForces.append(result.active_force[-1])
+            allPassForces.append(result.passive_force[-1])
+            allNetForces.append(total_force[-1])
             
 #            # Plotting results of individual trials to verify steady state assumption
 #            plt.figure('Force over time with different stimulations and lengths %.2f' %stretch)
@@ -222,7 +239,60 @@ def exercise1b():
         plt.legend(loc='upper right')
         plt.grid()
         
+    allActForces = np.array(allActForces).reshape((stretches.size,stimulations.size))
+    allPassForces = np.array(allPassForces).reshape((stretches.size,stimulations.size))
+    allNetForces = np.array(allNetForces).reshape((stretches.size,stimulations.size))
+    stimulations, stretches = np.meshgrid(stimulations, stretches)
     
+    fig1b = plt.figure('1b. Stim vs Active Force Surface Plot')
+    ax = fig1b.gca(projection='3d')
+    ax = fig1b.add_subplot(111, projection='3d')
+    ax.plot_surface(stimulations,stretches,allActForces,cmap=cm.coolwarm,
+                       linewidth=0.5, antialiased=False)
+    ax.set_xlabel('Stimulation')
+    ax.set_ylabel('Muscle Length (m)')
+    ax.set_zlabel('Active Force (N)')
+    plt.title('Stimulation vs Active Force')
+    
+    fig1b = plt.figure('1b. Stim vs Passive Force Surface Plot')
+    ax = fig1b.gca(projection='3d')
+    ax = fig1b.add_subplot(111, projection='3d')
+    ax.plot_surface(stimulations,stretches,allPassForces,cmap=cm.coolwarm,
+                       linewidth=0.5, antialiased=False)
+    ax.set_xlabel('Stimulation')
+    ax.set_ylabel('Muscle Length (m)')
+    ax.set_zlabel('Passive Force (N)')
+    plt.title('Stimulation vs Passive Force')
+    
+    fig1b = plt.figure('1b. Stim vs Total Force Surface Plot')
+    ax = fig1b.gca(projection='3d')
+    ax = fig1b.add_subplot(111, projection='3d')
+    ax.plot_surface(stimulations,stretches,allNetForces,cmap=cm.coolwarm,
+                       linewidth=0.5, antialiased=False)
+    ax.set_xlabel('Stimulation')
+    ax.set_ylabel('Muscle Length (m)')
+    ax.set_zlabel('Net Force (N)')
+    plt.title('Stimulation vs Total Force')
+    
+#    u = stimulations
+#    v = stretches
+#    u,v = np.meshgrid(u,v)
+#    u = u.flatten()
+#    v = v.flatten()
+#    
+#    points2D = np.vstack([u,v]).T
+#    tri = Delaunay(points2D)
+#    simplices = tri.simplices
+#    
+#    fig1b = FF.create_trisurf(np.array(allStims),np.array(allStretches),np.array(allActForces),
+#                         colormap="Portland",
+#                         simplices=simplices,
+#                         title='Stim vs Force for Different Lengths')
+#    
+#    py.iplot(fig1b, filename='Stim vs Force for Different Lengths')
+    # Add a color bar which maps values to colors.
+    #fig1b.colorbar(surf, shrink=0.5, aspect=5)
+    #plt.show()
 def exercise1c():
     """describe how fiber length influences the force-length curve. Compare 
     a muscle comprised of short muscle fibers to a muscle comprised of 
