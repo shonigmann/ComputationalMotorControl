@@ -98,9 +98,11 @@ def exercise1a():
     plt.ylabel('Muscle Force [N]')
     plt.legend(loc='upper left')
     plt.grid()
-    
+
+
 def exercise1b():
-    
+    return
+
 
 def exercise1d():
     """ Exercise 1d
@@ -306,9 +308,9 @@ def exercise1f():
 
 def exercise1():
 #    exercise1a()
-    exercise1b()
-#    exercise1d()
-    exercise1f()
+#    exercise1b()
+    exercise1d()
+#    exercise1f()
 
     if DEFAULT["save_figures"] is False:
         plt.show()
