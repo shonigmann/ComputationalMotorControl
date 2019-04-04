@@ -53,7 +53,7 @@ def exercise1a():
 
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
-    muscle_stretches = np.arange(.18,.30,.001)
+    muscle_stretches = np.arange(.12,.30,.002)
 
     muscle_active_forces = []
     muscle_passive_forces = []
