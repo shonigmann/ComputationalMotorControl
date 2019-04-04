@@ -87,7 +87,7 @@ def exercise1a():
                                muscle_length=muscle_stretch)
         
         muscle_active_forces.append(result.active_force[-1])
-        muscle_passive_forces.append(result.passive_force[-1])
+        muscle_passive_forces.append(result.passive_force[-1]) 
         total_force.append(result.active_force[-1]+result.passive_force[-1])
         contractile_element_length.append(result.l_ce[-1])
             
@@ -150,13 +150,14 @@ def exercise1b():
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
     stimulations = np.arange(.0,1.0,.03)
-    stretches = np.arange(.12,.36,.06) #default length is 0.24
+    stretches = np.arange(.12,.30,.06) #default length is 0.24
 
     for stretch in stretches:
         # Evalute for a single muscle stretch
         muscle_active_forces = []
         muscle_passive_forces = []
         total_force = []
+        l_ce = []
         for stimulation in stimulations:
            
             # Evalute for a single muscle stimulation
@@ -184,6 +185,7 @@ def exercise1b():
             muscle_active_forces.append(result.active_force[-1])
             muscle_passive_forces.append(result.passive_force[-1])
             total_force.append(result.active_force[-1]+result.passive_force[-1])
+            l_ce.append(result.l_ce[-1])
             
 #            # Plotting results of individual trials to verify steady state assumption
 #            plt.figure('Force over time with different stimulations and lengths %.2f' %stretch)
@@ -199,24 +201,24 @@ def exercise1b():
         # Plotting
         plt.figure('Isometric Muscle: Stimulation vs Force')
         plt.subplot(3,1,1)
-        plt.plot(stimulations, muscle_active_forces, label='Stretch = %.2f'%stretch)
+        plt.plot(stimulations, muscle_active_forces, label='L_mtu = %.2f'%stretch)
         plt.title('Isometric Muscle: Stimulation vs Force')
         plt.xlabel('Stimulation')
-        plt.ylabel('Active Muscle Force [N]')
+        plt.ylabel('Active Force [N]')
         plt.legend(loc='upper right')
         plt.grid()
         
         plt.subplot(3,1,2)
-        plt.plot(stimulations, muscle_passive_forces, label='Stretch = %.2f'%stretch)
+        plt.plot(stimulations, muscle_passive_forces, label='L_mtu = %.2f'%stretch)
         plt.xlabel('Stimulation')
-        plt.ylabel('Passive Muscle Force [N]')
+        plt.ylabel('Passive Force [N]')
         plt.legend(loc='upper right')
         plt.grid()
         
         plt.subplot(3,1,3)
-        plt.plot(stimulations, total_force, label='Stretch = %.2f'%stretch)
+        plt.plot(stimulations, total_force, label='L_mtu = %.2f'%stretch)
         plt.xlabel('Stimulation')
-        plt.ylabel('Total Muscle Force [N]')
+        plt.ylabel('Total Force [N]')
         plt.legend(loc='upper right')
         plt.grid()
         
@@ -440,8 +442,8 @@ def exercise1d():
 
 
 def exercise1():
-    exercise1a()
-#    exercise1b()
+  #  exercise1a()
+    exercise1b()
 #    exercise1c()
 #    exercise1d()
 
