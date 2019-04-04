@@ -58,6 +58,8 @@ def exercise1a():
     muscle_active_forces = []
     muscle_passive_forces = []
     total_force = []
+    contractile_element_length = []
+    
     
     # Evalute for a single muscle stretch
     for muscle_stretch in muscle_stretches:
@@ -87,14 +89,34 @@ def exercise1a():
         muscle_active_forces.append(result.active_force[-1])
         muscle_passive_forces.append(result.passive_force[-1])
         total_force.append(result.active_force[-1]+result.passive_force[-1])
+        contractile_element_length.append(result.l_ce[-1])
+            
+#        # Plotting
+#        plt.figure('Isometric Muscle: Contractile Element Length vs Time')
+#        plt.plot(time, result.l_ce, label='active')
+#        plt.title('Isometric Muscle: Contractile Element Length vs Time')
+#        plt.xlabel('Time [s]')
+#        plt.ylabel('Contractile Element Length [m]]')
+#        plt.legend(loc='upper right')
+#        plt.grid()
+#        
+#        plt.figure('Isometric Muscle: Contractile Element Length vs Force')
+#        plt.plot(result.l_ce, result.active_force, label='active')
+#        plt.plot(result.l_ce, result.passive_force, label='passive')
+#        plt.plot(result.l_ce, result.active_force+result.passive_force, label='total')
+#        plt.title('Isometric Muscle: Contractile Element Length vs Force')
+#        plt.xlabel('Contractile Element Length [m]')
+#        plt.ylabel('Muscle Force [N]')
+#        plt.legend(loc='upper right')
+#        plt.grid()
         
     # Plotting
-    plt.figure('Isometric Muscle: Stretch Length vs Force')
-    plt.plot(muscle_stretches, muscle_active_forces, label='active')
-    plt.plot(muscle_stretches, muscle_passive_forces, label='passive')
-    plt.plot(muscle_stretches, total_force, label='total')
+    plt.figure('Isometric Muscle: L_ce vs Force')
+    plt.plot(contractile_element_length, muscle_active_forces, label='active')
+    plt.plot(contractile_element_length, muscle_passive_forces, label='passive')
+    plt.plot(contractile_element_length, total_force, label='total')
     plt.title('Isometric Muscle: Stretch Length vs Force')
-    plt.xlabel('Length [m]')
+    plt.xlabel('Contractile Element Length [m]')
     plt.ylabel('Muscle Force [N]')
     plt.legend(loc='upper right')
     plt.grid()
@@ -418,9 +440,9 @@ def exercise1d():
 
 
 def exercise1():
-#    exercise1a()
+    exercise1a()
 #    exercise1b()
-    exercise1c()
+#    exercise1c()
 #    exercise1d()
 
     if DEFAULT["save_figures"] is False:
