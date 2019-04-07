@@ -54,7 +54,8 @@ def exercise1a():
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
     muscle_stretches = np.arange(.12,.30,.002)
-
+    
+    #muscle_tendon_forces = []  #Erase or comment
     muscle_active_forces = []
     muscle_passive_forces = []
     total_force = []
@@ -86,8 +87,10 @@ def exercise1a():
                                stimulation=muscle_stimulation,
                                muscle_length=muscle_stretch)
         
+#        muscle_tendon_forces.append(result.tendon_force[-1])#Erase or comment
         muscle_active_forces.append(result.active_force[-1])
         muscle_passive_forces.append(result.passive_force[-1])
+#        total_force.append(result.tendon_force[-1]+result.active_force[-1]+result.passive_force[-1])#Correct tendon force
         total_force.append(result.active_force[-1]+result.passive_force[-1])
         contractile_element_length.append(result.l_ce[-1])
             
@@ -121,6 +124,21 @@ def exercise1a():
     plt.legend(loc='upper right')
     plt.grid()
 
+
+#    print(len(contractile_element_length))
+#    print(len(result.l_ce))
+#    print(len(time))
+#    # Plotting
+#    plt.figure('Isometric Muscle: L_ce vs xyx')
+#    plt.plot(time, result.active_force, label='active')
+#    plt.plot(time, result.passive_force, label='pasive')
+##    plt.plot(contractile_element_length, muscle_passive_forces, label='passive')
+##    plt.plot(contractile_element_length, total_force, label='total')
+##    plt.title('Isometric Muscle: Stretch Length vs Force')
+##    plt.xlabel('Contractile Element Length [m]')
+##    plt.ylabel('Muscle Force [N]')
+#    plt.legend(loc='upper right')
+#    plt.grid()
 
 def exercise1b():
     
@@ -206,7 +224,6 @@ def exercise1b():
         plt.ylabel('Active Muscle Force [N]')
         plt.legend(loc='upper right')
         plt.grid()
-        
         plt.subplot(3,1,2)
         plt.plot(stimulations, muscle_passive_forces, label='Stretch = %.2f'%stretch)
         plt.xlabel('Stimulation')
@@ -269,10 +286,12 @@ def exercise1c():
         
         # Add the muscle to the system
         sys.add_muscle(muscle)
+        
         if muscle_length<.16:
             start_stretch_length = .16
         else:
             start_stretch_length = muscle_length
+            
         muscle_stretches = np.arange(start_stretch_length,1.2*muscle_length+.16,(1.2*muscle_length+.16-start_stretch_length)/40)
 
         muscle_active_forces = []
@@ -311,8 +330,10 @@ def exercise1c():
         max_muscle_active_forces.append(max(muscle_active_forces))
         
         active_max_index = muscle_active_forces.index(max(muscle_active_forces))
-        max_muscle_passive_forces.append(muscle_active_forces[active_max_index])
-        max_total_force.append(muscle_active_forces[active_max_index])
+#        max_muscle_passive_forces.append(muscle_active_forces[active_max_index])#original
+        max_muscle_passive_forces.append(muscle_passive_forces[active_max_index])
+#        max_total_force.append(muscle_active_forces[active_max_index])#original
+        max_total_force.append(total_force[active_max_index])
         max_force_stretch.append(muscle_stretches[active_max_index])
         
         # Plotting max force for each muscle length over different stretch values. Uncomment to see (adds ~8 plots)
@@ -355,6 +376,7 @@ def exercise1c():
     plt.legend(loc='upper left')
     plt.grid()
 
+#    print(max_muscle_active_forces)
     # Plot max stretch lengths of max vals
     plt.figure('Isometric muscle experiment max Force stretch')
     plt.plot(muscle_lengths, max_force_stretch, label='active')
@@ -427,7 +449,8 @@ def exercise1d():
 
     # Begin plotting
     plt.figure('Isotonic muscle experiment - load [10, 200] [N]')
-    max_vce_small = ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load_table_small)
+    max_vce_small = ex1d_for(sys, x0, time, time_step, time_stabilize,
+                             muscle_stimulation, load_table_small)
 
     plt.title('Isotonic muscle experiment - load [10, 200] [N]')
     plt.xlabel('Time [s]')
@@ -569,10 +592,10 @@ def exercise1f():
 
 
 def exercise1():
-    exercise1a()
+#    exercise1a()
 #    exercise1b()
 #    exercise1c()
-#    exercise1d()
+    exercise1d()
 #    exercise1f()
 
 
