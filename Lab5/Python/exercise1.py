@@ -500,7 +500,7 @@ def exercise1d():
     load_table_small = [5, 10, 20, 50, 100]
 
     # Begin plotting
-    plt.figure('Isotonic muscle experiment - load [5, 140] [N]')
+    """plt.figure('Isotonic muscle experiment - load [5, 140] [N]')
     max_vce += ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load_table_small, True)
 
     plt.title('Isotonic muscle experiment - load [5, 140] [N]')
@@ -522,26 +522,40 @@ def exercise1d():
     plt.xlabel('Time [s]')
     plt.ylabel('Muscle contractile velocity [m/s]')
     plt.legend(loc='upper right')
-    plt.grid()
+    plt.grid()"""
 
     # ---------------------------------------------
     # Plot velocity - tension relation
     # ---------------------------------------------
-    load = np.arange(5, 1500, 10)
-    max_vce = ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load, False)
+    load = np.arange(5, 2500, 200)
+    (max_vce, active_force) = ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load, False)
 
-    plt.figure('Velocity - Tension')
+    fig = plt.figure('Velocity - Tension')
+    ax = fig.add_subplot(111)
+
+    # Plot comments and line at 0 value
+    min_val = 0.0
+    if min(map(abs, max_vce)) not in max_vce:
+        min_val = -min(map(abs, max_vce))
+    else:
+        min_val = min(map(abs, max_vce))
+
+    xy = (load[max_vce.index(min_val)], min_val)
+    xytext = (load[max_vce.index(min_val)]+50, min_val)
+    ax.annotate('load = {:0.1f}'.format(152.2), xy=xy, xytext=xytext)
+
     plt.title('Velocity [m/s] - Tension [N]')
     plt.xlabel('Tension [N]')
     plt.ylabel('Velocity [m/s]')
     plt.grid()
 
     plt.plot(load, max_vce)
+    plt.plot(load[max_vce.index(min_val)], min_val, 'o')
 
 
 def ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load, plot):
     max_vce = []
-    print(time)
+    active_force = []
 
     for l in load:
         # Run the integration
@@ -553,20 +567,17 @@ def ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load,
                                load=l)
 
         # Recover the maximum velocity
-        """if result.l_mtc[-1] < (sys.muscle.L_OPT + sys.muscle.L_SLACK):
-            max_vce.append(max(result.v_ce))
-        else:
-            max_vce.append(min(result.v_ce))"""
-
         if abs(min(result.v_ce)) > max(result.v_ce):
             max_vce.append(min(result.v_ce))
+            active_force.append(result.active_force[result.v_ce.argmin()])
         else:
             max_vce.append(max(result.v_ce))
+            active_force.append(result.active_force[result.v_ce.argmax()])
 
         if plot:
             plt.plot(result.time, result.v_ce, label='load {}'.format(l))
 
-    return max_vce
+    return max_vce, active_force
 
 
 def exercise1f():
@@ -617,6 +628,10 @@ def exercise1f():
 
     time = np.arange(t_start, t_stop, time_step)
 
+    # ---------------------------------------------
+    # maximum force over stimulation
+    # ---------------------------------------------
+    """
     # Evaluate for different muscle stimulation
     muscle_stimulation = np.arange(0, 1.1, 0.1)
     max_active_force = []
@@ -651,9 +666,70 @@ def exercise1f():
     plt.plot(muscle_stimulation, max_passive_force, label='maximum passive force')
     plt.plot(muscle_stimulation, max_sum_force, label='maximum sum force')
 
-    plt.xlabel('Stimulation [V]')
+    plt.xlabel('Stimulation [-]')
     plt.ylabel('Muscle sum forces [N]')
     plt.legend(loc='upper right')
+    plt.grid()"""
+
+    # ---------------------------------------------
+    # force - velocity over stimulation
+    # ---------------------------------------------
+    """muscle_stimulation = np.arange(0, 1.1, 0.1)
+
+    # Begin plotting
+    for s in muscle_stimulation:
+        # Run the integration
+        result = sys.integrate(x0=x0,
+                               time=time,
+                               time_step=time_step,
+                               time_stabilize=time_stabilize,
+                               stimulation=s,
+                               load=load)
+
+        plt.figure('Isotonic muscle active force - velocity')
+        plt.plot(result.v_ce[200:-1], result.active_force[200:-1], label='stimulation {:0.1f}'.format(s))
+
+        plt.figure('Isotonic muscle passive force - velocity')
+        plt.plot(result.v_ce[200:-1], result.passive_force[200:-1], label='stimulation {:0.1f}'.format(s))
+
+        plt.figure('Isotonic muscle sum forces - velocity')
+        plt.plot(result.v_ce[200:-1], result.active_force[200:-1] + result.passive_force[200:-1],
+                 label='stimulation {:0.1f}'.format(s))
+
+    plt.figure('Isotonic muscle active force - velocity')
+    plt.xlabel('Velocity contractile element [m/s]')
+    plt.ylabel('Active force [N]')
+    plt.legend(loc='upper right')
+    plt.grid()
+
+    plt.figure('Isotonic muscle passive force - velocity')
+    plt.xlabel('Velocity contractile element [m/s]')
+    plt.ylabel('Passive force [N]')
+    plt.legend(loc='upper right')
+    plt.grid()
+
+    plt.figure('Isotonic muscle sum forces - velocity')
+    plt.xlabel('Velocity contractile element [m/s]')
+    plt.ylabel('Sum forces [N]')
+    plt.legend(loc='upper right')
+    plt.grid()"""
+
+    # ---------------------------------------------
+    # Plot velocity - tension relation
+    # ---------------------------------------------
+    muscle_stimulation = np.arange(0, 1.1, 0.25)
+    load = np.arange(5, 1500, 20)
+    plt.figure('Velocity - Tension')
+
+    # Begin plotting
+    for s in muscle_stimulation:
+        (max_vce, active_force) = ex1d_for(sys, x0, time, time_step, time_stabilize, s, load, False)
+        plt.plot(load, max_vce, label="stimulation {:0.1f}".format(s))
+
+    plt.title('Velocity [m/s] - Load [N]')
+    plt.xlabel('Load [N]')
+    plt.ylabel('Velocity [m/s]')
+    plt.legend(loc='lower right')
     plt.grid()
 
 
@@ -663,7 +739,6 @@ def exercise1():
 #    exercise1c()
 #    exercise1d()
     exercise1f()
-
 
     if DEFAULT["save_figures"] is False:
         plt.show()
