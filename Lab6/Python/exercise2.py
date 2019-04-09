@@ -18,8 +18,8 @@ from neural_system import NeuralSystem
 from pendulum_system import PendulumSystem
 from system import System
 from system_animation import SystemAnimation
-from system_parameters import (MuscleParameters, NetworkParameters,
-                               PendulumParameters)
+from system_parameters import (MuscleParameters, 
+                               PendulumParameters, NetworkParameters,)
 from system_simulation import SystemSimulation
 
 
@@ -34,6 +34,40 @@ plt.rc('ytick', labelsize=14.0)    # fontsize of the tick labels
 
 DEFAULT["save_figures"] = True
 
+
+############Exercise 2A ###############################################
+    #KPP: function called from exercise2() below
+def fromtheta(a1, a2, name):
+    
+    muscle_length = []
+    moment_arm = []
+    thetas = np.arange(-np.pi/4, np.pi/4 , 0.001)
+    
+    for theta in thetas: 
+        
+        L = np.sqrt(a1**2+a2**2+2*a1*a2*np.sin(theta))
+        h = a1*a2*np.cos(theta)/L
+        
+        muscle_length.append(L)
+        moment_arm.append(h)
+        
+        
+    plt.figure('Muscle length v.s. theta')
+    plt.plot(thetas, muscle_length, label = ('muscle %.1i' %(name)))
+    plt.title('Muscle length v.s. theta')
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Muscle length [m]')
+    plt.legend(loc='center left')
+    plt.grid() 
+        
+    plt.figure('Moment Arm v.s. theta')
+    plt.plot(thetas, moment_arm, label = ('muscle %.1i' %(name)))
+    plt.title('Moment Arm v.s. theta')
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Moment Arm [m]')
+    plt.legend(loc='center left')
+    plt.grid() 
+    
 
 def exercise2():
     """ Main function to run for Exercise 2.
@@ -83,7 +117,25 @@ def exercise2():
     # Attach the muscles
     muscles.attach(np.array([m1_origin, m1_insertion]),
                    np.array([m2_origin, m2_insertion]))
-
+    
+    
+    ############Exercise 2A ###############################################
+    # rigth after creating and attaching both muscles:
+    
+#    print(m1_origin, m2_origin)
+#    m1a1 =abs( abs(m1_origin[0]) - abs(m1_origin[1]))
+#    m1a2 =abs( abs(m1_insertion[0]) - abs(m1_insertion[1]))
+    m1a1 = m1_origin[0] - m1_origin[1]
+    m1a2 = m1_insertion[0] - m1_insertion[1]
+    m2a1 = m2_origin[0] - m2_origin[1]
+    m2a2 = m2_insertion[0] - m2_insertion[1]
+#    print(m1a1, m1a2)
+    fromtheta(m1a1, m1a2, 1)
+    fromtheta(m2a1, m2a2, 2)
+    
+    #######################################################################
+    
+    
     # Create a system with Pendulum and Muscles using the System Class
     # Check System.py for more details on System class
     sys = System()  # Instantiate a new system
