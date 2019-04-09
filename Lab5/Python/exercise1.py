@@ -31,6 +31,14 @@ plt.rc('ytick', labelsize=14.0)    # fontsize of the tick labels
 
 DEFAULT["save_figures"] = True
 
+def plotXY(X,Y,X_Label,Y_Label,Y_Legend,Title,Figure):
+    plt.figure(Figure)
+    plt.plot(X, Y, label=Y_Legend)
+    plt.title(Title)
+    plt.xlabel(X_Label)
+    plt.ylabel(Y_Label)
+    plt.legend(loc='upper right')
+    plt.grid()
 
 def exercise1a():
     """ Exercise 1a
@@ -96,25 +104,16 @@ def exercise1a():
         muscle_passive_forces.append(result.passive_force[-1]) 
         total_force.append(result.active_force[-1]+result.passive_force[-1])
         contractile_element_length.append(result.l_ce[-1])
-            
-#        # Plotting
-#        plt.figure('Isometric Muscle: Contractile Element Length vs Time')
-#        plt.plot(time, result.l_ce, label='active')
-#        plt.title('Isometric Muscle: Contractile Element Length vs Time')
-#        plt.xlabel('Time [s]')
-#        plt.ylabel('Contractile Element Length [m]]')
-#        plt.legend(loc='upper right')
-#        plt.grid()
-#        
-#        plt.figure('Isometric Muscle: Contractile Element Length vs Force')
-#        plt.plot(result.l_ce, result.active_force, label='active')
+                
+#        plotXY(time,result.l_ce,'Time [s]','Contractile Element Length [m]','Active',
+#               'Isometric Muscle: Contractile Element Length vs Time',
+#               'Isometric Muscle: Contractile Element Length vs Time')
+        
+#        plotXY(result.l_ce,result.active_force,'Contractile Element Length [m]','Active Force [N]','Active',
+#               'Isometric Muscle: Contractile Element Length vs Force',
+#               'Isometric Muscle: Contractile Element Length vs Force')
 #        plt.plot(result.l_ce, result.passive_force, label='passive')
 #        plt.plot(result.l_ce, result.active_force+result.passive_force, label='total')
-#        plt.title('Isometric Muscle: Contractile Element Length vs Force')
-#        plt.xlabel('Contractile Element Length [m]')
-#        plt.ylabel('Muscle Force [N]')
-#        plt.legend(loc='upper right')
-#        plt.grid()
         
     # Plotting
     plt.figure('Isometric Muscle: L_ce vs Force')
