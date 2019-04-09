@@ -381,8 +381,8 @@ def exercise1c():
         max_muscle_active_forces.append(max(muscle_active_forces))
         
         active_max_index = muscle_active_forces.index(max(muscle_active_forces))
-        max_muscle_passive_forces.append(muscle_active_forces[active_max_index])
-        max_total_force.append(muscle_active_forces[active_max_index])
+        max_muscle_passive_forces.append(muscle_passive_forces[active_max_index])
+        max_total_force.append(total_force[active_max_index])
         max_force_stretch.append(muscle_stretches[active_max_index])
         
         # Plotting max force for each muscle length over different stretch values. Uncomment to see (adds ~8 plots)
