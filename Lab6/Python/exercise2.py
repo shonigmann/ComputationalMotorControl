@@ -130,8 +130,8 @@ def exercise2():
     m2a1 = m2_origin[0] - m2_origin[1]
     m2a2 = m2_insertion[0] - m2_insertion[1]
 #    print(m1a1, m1a2)
-    fromtheta(m1a1, m1a2, 1)
-    fromtheta(m2a1, m2a2, 2)
+#    fromtheta(m1a1, m1a2, 1)
+#    fromtheta(m2a1, m2a2, 2)
     
     #######################################################################
     
@@ -143,11 +143,12 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
-    time = np.arange(0., t_max, 0.001)  # Time vector
+    t_max = 6  # Maximum simulation time
+    time = np.arange(0., t_max, 0.002)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
+    x0_P = np.array([0., 0.])  # Pendulum initial condition
 
     # Muscle Model initial condition
     x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
@@ -165,8 +166,25 @@ def exercise2():
     # Here you can define your muscle activation vectors
     # that are time dependent
 
-    act1 = np.ones((len(time), 1)) * 1.
-    act2 = np.ones((len(time), 1)) * 0.05
+#    act1 = np.ones((len(time), 1)) * 0.
+#    act2 = np.ones((len(time), 1)) * 1.
+#    slope_h = np.arange(0., 1.0, 1./len(time))
+#    slope_v = slope_h.reshape(len(time), 1)
+#    act2 = slope_v
+#    slope_h = np.arange(0., 1.0, 1./len(time))
+    wave_h1 = np.sin(time*3)*2               #makes a sinusoidal wave from 'time'
+    wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
+    
+    wave_h1[wave_h1<0] = 0      #formality of passing negative values to zero
+    wave_h2[wave_h2<0] = 0      #formality of passing negative values to zero
+    
+    act1 = wave_h1.reshape(len(time), 1) #makes a vertical array like act1
+    act2 = wave_h2.reshape(len(time), 1) #makes a vertical array like act1
+    
+    print (len(act1), len(act2))
+    print(act1)
+    print(act2)
+#    print(act2)
 
     activations = np.hstack((act1, act2))
 

@@ -65,9 +65,11 @@ class PendulumSystem(object):
 
         # YOU CAN ADD PERTURBATIONS TO THE PENDULUM MODEL HERE
         if self.parameters.PERTURBATION is True:
-            if 1.2 < time < 1.25:
+            if 1.2 < time < 1.6:
                 pylog.warning('Perturbing the pendulum')
-                theta = 0.0
+                theta = -2*np.pi/3
+                dtheta = 0.51
+#                torque = 0.
 
         return np.array([
             [dtheta],

@@ -80,8 +80,17 @@ def exercise3():
     ##### Neural Network #####
     # The network consists of four neurons
     N_params = NetworkParameters()  # Instantiate default network parameters
-    N_params.D = 2.  # To change a network parameter
+    N_params.D = 1.  # To change a network parameter
     # Similarly to change w -> N_params.w = (4x4) array
+    print(N_params.w)
+    ############################# Exercise 3A  ######################
+    N_params.w = np.asarray([[ 0, -1,  1, -1],
+                             [-1,  0, -1,  1],
+                             [-1,  0,  0,  0], 
+                             [ 0, -1,  0,  0]])*5
+    print(N_params.w, N_params.D, N_params.tau, N_params.b, N_params.exp )
+
+    
 
     # Create a new neural network with above parameters
     neural_network = NeuralSystem(N_params)
@@ -97,7 +106,7 @@ def exercise3():
     sys.add_neural_system(neural_network)
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
+    t_max = 4.5  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -119,8 +128,21 @@ def exercise3():
 
     # Add external inputs to neural network
 
-    # sim.add_external_inputs_to_network(np.ones((len(time), 4)))
-    # sim.add_external_inputs_to_network(ext_in)
+#    sim.add_external_inputs_to_network(np.ones((len(time), 4)))
+    
+    wave_h1 = np.sin(time*3)*2               #makes a sinusoidal wave from 'time'
+    wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
+    
+    wave_h1[wave_h1<0] = 0      #formality of passing negative values to zero
+    wave_h2[wave_h2<0] = 0      #formality of passing negative values to zero
+    
+    act1 = wave_h1.reshape(len(time), 1) #makes a vertical array like act1
+    act2 = wave_h2.reshape(len(time), 1) #makes a vertical array like act1
+    column = np.ones((len(time), 1))
+    
+    ext_in = np.hstack((act1, column, act2, column))
+    
+    sim.add_external_inputs_to_network(ext_in)
 
     sim.initalize_system(x0, time)  # Initialize the system state
 
