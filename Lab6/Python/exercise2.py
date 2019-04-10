@@ -109,8 +109,8 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 20  # Maximum simulation time
-    time = np.arange(0., t_max, 0.002)  # Time vector
+    t_max = 5  # Maximum simulation time
+    time = np.arange(0., t_max, 0.004)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
@@ -137,7 +137,7 @@ def exercise2():
 #    slope_v = slope_h.reshape(len(time), 1)
 #    act2 = slope_v
 #    slope_h = np.arange(0., 1.0, 1./len(time))
-    wave_h1 = np.sin(time*3)*2               #makes a sinusoidal wave from 'time'
+    wave_h1 = np.sin(time*3)*1               #makes a sinusoidal wave from 'time'
     wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
     
     wave_h1[wave_h1<0] = 0      #formality of passing negative values to zero
@@ -145,6 +145,17 @@ def exercise2():
     
     act1 = wave_h1.reshape(len(time), 1) #makes a vertical array like act1
     act2 = wave_h2.reshape(len(time), 1) #makes a vertical array like act1
+    
+    # Plotting the waveforms
+    plt.figure('Muscle Activations')
+    plt.title('Muscle Activation Functions')
+    plt.plot(time, wave_h1, label='Muscle 1')
+    plt.plot(time, wave_h2, label='Muscle 2')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Muscle Excitation')
+    plt.legend(loc='upper right')
+    plt.grid()
+
     
     print (len(act1), len(act2))
     print(act1)
