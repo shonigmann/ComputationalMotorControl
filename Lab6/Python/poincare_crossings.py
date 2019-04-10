@@ -32,17 +32,17 @@ def poincare_crossings(res, threshold, crossing_index, figure):
     # Figure limit cycle variance
     plt.figure(figure)
     plt.plot(pos_treshold, "o-")
-    val_min = np.sort(pos_treshold)[2]
-    val_max = np.sort(pos_treshold)[-2]
+    val_min = min(pos_treshold)
+    val_max = max(pos_treshold)
     bnd = 0.3*(val_max - val_min)
     plt.ylim([val_min-bnd, val_max+bnd])
     plt.xlabel(u"Number of Poincaré section crossings")
-    plt.ylabel("Value for Neuron 1 (Neuron 2 = {})".format(threshold))
+    plt.ylabel("Pedulum Angle [rad] (Pendulum Velocity = {} [rad/s])".format(threshold))
     plt.grid(True)
 
     # Figure limit cycle
     plt.figure(figure+"_phase")
-    plt.plot([val_min-0.3, val_max+0.3], [threshold]*2, "gx--")
+    plt.plot([val_min-0.1, val_max+0.1], [threshold]*2, "gx--")
     for pos in pos_treshold:
         plt.plot(pos, threshold, "ro")
 
