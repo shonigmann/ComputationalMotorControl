@@ -22,6 +22,7 @@ from system_parameters import (MuscleParameters, NetworkParameters,
                                PendulumParameters)
 from system_simulation import SystemSimulation
 
+from poincare_crossings import poincare_crossings
 
 # Global settings for plotting
 # You may change as per your requirement
@@ -83,7 +84,29 @@ def exercise2():
     # Attach the muscles
     muscles.attach(np.array([m1_origin, m1_insertion]),
                    np.array([m2_origin, m2_insertion]))
+<<<<<<< Updated upstream
 
+=======
+    
+    
+    ############Exercise 2A ###############################################
+    # rigth after creating and attaching both muscles:
+    
+#    print(m1_origin, m2_origin)
+#    m1a1 =abs( abs(m1_origin[0]) - abs(m1_origin[1]))
+#    m1a2 =abs( abs(m1_insertion[0]) - abs(m1_insertion[1]))
+#    m1a1 = m1_origin[0] - m1_origin[1]
+#    m1a2 = m1_insertion[0] - m1_insertion[1]
+#    m2a1 = m2_origin[0] - m2_origin[1]
+#    m2a2 = m2_insertion[0] - m2_insertion[1]
+#    print(m1a1, m1a2)
+#    fromtheta(m1a1, m1a2, 1)
+#    fromtheta(m2a1, m2a2, 2)
+    
+    #######################################################################
+    
+    
+>>>>>>> Stashed changes
     # Create a system with Pendulum and Muscles using the System Class
     # Check System.py for more details on System class
     sys = System()  # Instantiate a new system
@@ -119,16 +142,14 @@ def exercise2():
     activations = np.hstack((act1, act2))
 
     # Method to add the muscle activations to the simulation
-
     sim.add_muscle_activations(activations)
 
     # Simulate the system for given time
-
     sim.initalize_system(x0, time)  # Initialize the system state
 
     #: If you would like to perturb the pedulum model then you could do
     # so by
-    sim.sys.pendulum_sys.parameters.PERTURBATION = True
+    sim.sys.pendulum_sys.parameters.PERTURBATION = False
     # The above line sets the state of the pendulum model to zeros between
     # time interval 1.2 < t < 1.25. You can change this and the type of
     # perturbation in
@@ -154,6 +175,8 @@ def exercise2():
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
+
+    poincare_crossings(res, 0.5, 1, "2b Crossings")
 
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
