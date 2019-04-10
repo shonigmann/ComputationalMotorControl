@@ -12,3 +12,6 @@ __pychache__
 
 #: Temp
 *.*~
+
+#: pycharm
+*.idea

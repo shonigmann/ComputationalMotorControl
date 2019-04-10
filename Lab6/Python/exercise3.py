@@ -83,10 +83,10 @@ def exercise3():
     N_params.tau = [0.02, 0.02, 0.1, 0.1]
     N_params.b = [3.0, 3.0, -3.0, -3.0]
     N_params.D = 1.0 # To change a network parameter
-    N_params.w = [[0.0, -5.0, 50.0, -5.0],
-                  [-5.0, 0.5, -5.0, 5.0],
-                  [-50.0, 0.0, 1.0, 0.0],
-                  [0.0, -5.0, 0.0, -0.5]]
+    N_params.w = np.asarray([[0.0, -5.0, -5.0, 0.0],
+                             [-5.0, 0.0, 0.0, -5.0],
+                             [5.0, -5.0, 0.0, 0.0],
+                             [-5.0, 5.0, 0.0, 0.0]])
     # Similarly to change w -> N_params.w = (4x4) array
 
     # Create a new neural network with above parameters
@@ -102,53 +102,55 @@ def exercise3():
     sys.add_neural_system(neural_network)  # Add the neural network to the system
 
     ##### Time #####
-    t_max = 3.5  # Maximum simulation time
+    t_max = 2.5  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
-    x0_P = np.array([0., 0.])  # Pendulum initial condition
+    x0_P = np.array([[-0.5, 0], [-0.25, -0.25], [0., 0.], [0.5, 0]])  # Pendulum initial condition
 
-    # Muscle Model initial condition
-    x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
+    for i in x0_P:
+        # Muscle Model initial condition
+        x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
 
-    x0_N = np.array([-1.5, 1, 2.5, 1])  # Neural Network Initial Conditions
+        x0_N = np.array([-1.5, 1, 2.5, 1])  # Neural Network Initial Conditions
 
-    x0 = np.concatenate((x0_P, x0_M, x0_N))  # System initial conditions
+        x0 = np.concatenate((i, x0_M, x0_N))  # System initial conditions
 
-    ##### System Simulation #####
-    # For more details on System Simulation check SystemSimulation.py
-    # SystemSimulation is used to initialize the system and integrate
-    # over time
+        ##### System Simulation #####
+        # For more details on System Simulation check SystemSimulation.py
+        # SystemSimulation is used to initialize the system and integrate
+        # over time
 
-    sim = SystemSimulation(sys)  # Instantiate Simulation object
+        sim = SystemSimulation(sys)  # Instantiate Simulation object
 
-    # Add external inputs to neural network
+        # Add external inputs to neural network
 
-    #sim.add_external_inputs_to_network(np.ones((len(time), 4)))
-    #sim.add_external_inputs_to_network(ext_in)
+        #sim.add_external_inputs_to_network(np.ones((len(time), 4)))
+        #sim.add_external_inputs_to_network(ext_in)
 
-    sim.initalize_system(x0, time)  # Initialize the system state
+        sim.initalize_system(x0, time)  # Initialize the system state
 
-    # Integrate the system for the above initialized state and time
-    sim.simulate()
+        # Integrate the system for the above initialized state and time
+        sim.simulate()
 
-    # Obtain the states of the system after integration
-    # res is np.array [time, states]
-    # states vector is in the same order as x0
-    res = sim.results()
+        # Obtain the states of the system after integration
+        # res is np.array [time, states]
+        # states vector is in the same order as x0
+        res = sim.results()
 
-    # In order to obtain internal states of the muscle
-    # you can access the results attribute in the muscle class
-    muscle1_results = sim.sys.muscle_sys.Muscle1.results
-    muscle2_results = sim.sys.muscle_sys.Muscle2.results
+        # In order to obtain internal states of the muscle
+        # you can access the results attribute in the muscle class
+        muscle1_results = sim.sys.muscle_sys.Muscle1.results
+        muscle2_results = sim.sys.muscle_sys.Muscle2.results
 
-    # Plotting the results
-    plt.figure('Pendulum')
-    plt.title('Pendulum Phase')
-    plt.plot(res[:, 0], res[:, :2])
-    plt.xlabel('Position [rad]')
-    plt.ylabel('Velocity [rad.s]')
-    plt.grid()
+        # Plotting the results
+        plt.figure('Pendulum')
+        plt.title('Pendulum Phase')
+        plt.plot(res[:, 0], res[:, 2], label='Init pos [{}, {}]'.format(i[0], i[1]))
+        plt.xlabel('Position [rad]')
+        plt.ylabel('Velocity [rad.s]')
+        plt.legend(loc='lower right')
+        plt.grid()
 
     if DEFAULT["save_figures"] is False:
         plt.show()
