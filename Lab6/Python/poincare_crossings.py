@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Apr 10 22:28:47 2019
+import numpy as np
+from matplotlib import pyplot as plt
 
-@author: Simon
-"""
 def poincare_crossings(res, threshold, crossing_index, figure):
     """ Study poincaré crossings """
     ci = crossing_index
 
     # Extract state of first trajectory
-    state = np.array(res.state[0])
+    state = res[:,1:3]
 
     # Crossing index (index corrsponds to last point before crossing)
     idx = np.argwhere(np.diff(np.sign(state[:, ci] - threshold)) < 0)
@@ -49,7 +47,7 @@ def poincare_crossings(res, threshold, crossing_index, figure):
         plt.plot(pos, threshold, "ro")
 
     # Save plots if option activated
-    if DEFAULT["save_figures"] is True:
+    if False:
         from cmcpack.plot import save_figure
         save_figure(figure)
         save_figure(figure+"_phase")

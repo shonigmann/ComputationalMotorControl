@@ -84,10 +84,7 @@ def exercise2():
     # Attach the muscles
     muscles.attach(np.array([m1_origin, m1_insertion]),
                    np.array([m2_origin, m2_insertion]))
-<<<<<<< Updated upstream
-
-=======
-    
+  
     
     ############Exercise 2A ###############################################
     # rigth after creating and attaching both muscles:
@@ -104,9 +101,7 @@ def exercise2():
 #    fromtheta(m2a1, m2a2, 2)
     
     #######################################################################
-    
-    
->>>>>>> Stashed changes
+  
     # Create a system with Pendulum and Muscles using the System Class
     # Check System.py for more details on System class
     sys = System()  # Instantiate a new system
@@ -114,8 +109,8 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
-    time = np.arange(0., t_max, 0.001)  # Time vector
+    t_max = 20  # Maximum simulation time
+    time = np.arange(0., t_max, 0.002)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
@@ -136,8 +131,26 @@ def exercise2():
     # Here you can define your muscle activation vectors
     # that are time dependent
 
-    act1 = np.ones((len(time), 1)) * 1.
-    act2 = np.ones((len(time), 1)) * 0.05
+#    act1 = np.ones((len(time), 1)) * 0.
+#    act2 = np.ones((len(time), 1)) * 1.
+#    slope_h = np.arange(0., 1.0, 1./len(time))
+#    slope_v = slope_h.reshape(len(time), 1)
+#    act2 = slope_v
+#    slope_h = np.arange(0., 1.0, 1./len(time))
+    wave_h1 = np.sin(time*3)*2               #makes a sinusoidal wave from 'time'
+    wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
+    
+    wave_h1[wave_h1<0] = 0      #formality of passing negative values to zero
+    wave_h2[wave_h2<0] = 0      #formality of passing negative values to zero
+    
+    act1 = wave_h1.reshape(len(time), 1) #makes a vertical array like act1
+    act2 = wave_h2.reshape(len(time), 1) #makes a vertical array like act1
+    
+    print (len(act1), len(act2))
+    print(act1)
+    print(act2)
+#    print(act2)
+
 
     activations = np.hstack((act1, act2))
 
@@ -169,14 +182,14 @@ def exercise2():
     muscle2_results = sim.sys.muscle_sys.Muscle2.results
 
     # Plotting the results
-    plt.figure('Pendulum')
+    plt.figure('Pendulum_phase')
     plt.title('Pendulum Phase')
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
 
-    poincare_crossings(res, 0.5, 1, "2b Crossings")
+    poincare_crossings(res, 0.1, 1, "Pendulum")
 
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
