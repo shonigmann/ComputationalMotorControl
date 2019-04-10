@@ -45,10 +45,10 @@ def exercise3():
     P_params = PendulumParameters()  # Instantiate pendulum parameters
     P_params.L = 0.5  # To change the default length of the pendulum
     P_params.m = 1.  # To change the default mass of the pendulum
+    P_params.PERTURBATION = True
     pendulum = PendulumSystem(P_params)  # Instantiate Pendulum object
 
     #### CHECK OUT Pendulum.py to ADD PERTURBATIONS TO THE MODEL #####
-
     pylog.info('Pendulum model initialized \n {}'.format(
         pendulum.parameters.showParameters()))
 
@@ -80,7 +80,13 @@ def exercise3():
     ##### Neural Network #####
     # The network consists of four neurons
     N_params = NetworkParameters()  # Instantiate default network parameters
-    N_params.D = 2.  # To change a network parameter
+    N_params.tau = [0.02, 0.02, 0.1, 0.1]
+    N_params.b = [3.0, 3.0, -3.0, -3.0]
+    N_params.D = 1.0 # To change a network parameter
+    N_params.w = [[0.0, -5.0, 50.0, -5.0],
+                  [-5.0, 0.5, -5.0, 5.0],
+                  [-50.0, 0.0, 1.0, 0.0],
+                  [0.0, -5.0, 0.0, -0.5]]
     # Similarly to change w -> N_params.w = (4x4) array
 
     # Create a new neural network with above parameters
@@ -93,11 +99,10 @@ def exercise3():
     sys = System()  # Instantiate a new system
     sys.add_pendulum_system(pendulum)  # Add the pendulum model to the system
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
-    # Add the neural network to the system
-    sys.add_neural_system(neural_network)
+    sys.add_neural_system(neural_network)  # Add the neural network to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
+    t_max = 3.5  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -106,7 +111,7 @@ def exercise3():
     # Muscle Model initial condition
     x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
 
-    x0_N = np.array([-0.5, 1, 0.5, 1])  # Neural Network Initial Conditions
+    x0_N = np.array([-1.5, 1, 2.5, 1])  # Neural Network Initial Conditions
 
     x0 = np.concatenate((x0_P, x0_M, x0_N))  # System initial conditions
 
@@ -119,18 +124,13 @@ def exercise3():
 
     # Add external inputs to neural network
 
-    # sim.add_external_inputs_to_network(np.ones((len(time), 4)))
-    # sim.add_external_inputs_to_network(ext_in)
+    #sim.add_external_inputs_to_network(np.ones((len(time), 4)))
+    #sim.add_external_inputs_to_network(ext_in)
 
     sim.initalize_system(x0, time)  # Initialize the system state
 
     # Integrate the system for the above initialized state and time
     sim.simulate()
-
-    # Obtain the states of the system after integration
-    # res is np.array [time, states]
-    # states vector is in the same order as x0
-    res = sim.results()
 
     # Obtain the states of the system after integration
     # res is np.array [time, states]

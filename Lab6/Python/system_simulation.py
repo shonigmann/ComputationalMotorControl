@@ -134,8 +134,7 @@ class SystemSimulation(object):
         if (self.sys.systems_list.count('neural') == 1.0):
             self.sys.neural_sys.external_inputs(
                 self._get_current_external_input_to_network(time))
-            n_der = self.sys.neural_sys.derivative(
-                time, state[6:])
+            n_der = self.sys.neural_sys.derivative(time, state[6:])
             update = np.concatenate((p_der, m_der, n_der), axis=0)
         else:
             update = np.concatenate((p_der, m_der), axis=0)

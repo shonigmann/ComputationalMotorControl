@@ -61,13 +61,14 @@ class PendulumSystem(object):
 
     def pendulum_system(self, time, theta, dtheta, torque):
         """ Pendulum System.
-        Accessor method adding pertrubtions."""
+        Accessor method adding perturbations."""
 
         # YOU CAN ADD PERTURBATIONS TO THE PENDULUM MODEL HERE
         if self.parameters.PERTURBATION is True:
             if 1.2 < time < 1.25:
-                pylog.warning('Perturbing the pendulum')
-                theta = 0.0
+                #pylog.warning('Perturbing the pendulum')
+                theta = -1.5
+                torque = -100
 
         return np.array([
             [dtheta],
