@@ -35,7 +35,57 @@ plt.rc('ytick', labelsize=14.0)    # fontsize of the tick labels
 
 DEFAULT["save_figures"] = True
 
+############Exercise 2A ###############################################
+    #KPP: function called from exercise2() below
+def fromtheta(muscle, a1, a2, name):
+    
+    muscle_length = []
+    moment_arm = []
+    thetas = np.arange(-np.pi/4, np.pi/4 , 0.001)
+    
+    for theta in thetas: 
+        
+        L = np.sqrt(a1**2+a2**2+2*a1*a2*np.sin(theta))
+        h = a1*a2*np.cos(theta)/L
+        
+        muscle_length.append(L)
+        moment_arm.append(h)
+        
+    plt.figure('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.plot(thetas, muscle_length, label ='Length')
+    plt.title('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Distance [m]')
+    plt.legend(loc='upper right')
+    plt.grid() 
+                
+    plt.figure('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.plot(thetas, np.abs(moment_arm), label ='Moment Arm')
+    plt.title('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Distance [m]')
+    plt.legend(loc='upper right')
+    plt.grid() 
 
+    #calculate the total muscle force at each position to determine the max torque for the muscle
+    passive_forces = []
+    active_forces = []
+    total_forces = []
+    for length in muscle_length:                  
+        passive_forces.append(muscle.compute_passive_force(length))
+        active_forces.append(muscle.compute_active_force(length,0,1))
+        total_forces = np.add(passive_forces,active_forces)
+    
+    total_torques = np.multiply(total_forces,moment_arm)
+    
+    plt.figure('Muscle Torque v.s. Pendulum Angle')
+    plt.plot(thetas, np.abs(total_torques), label ='Muscle %.1i' %(name))
+    plt.title('Max Muscle Torque v.s. Pendulum Angle')
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Muscle Torque (abs) [Nm]')
+    plt.legend(loc='upper right')
+    plt.grid() 
+    
 def exercise2():
     """ Main function to run for Exercise 2.
 
@@ -97,8 +147,8 @@ def exercise2():
     m2a1 = m2_origin[0] - m2_origin[1]
     m2a2 = m2_insertion[0] - m2_insertion[1]
     print(m1a1, m1a2)
-    fromtheta(m1a1, m1a2, 1)
-    fromtheta(m2a1, m2a2, 2)
+    fromtheta(M1, m1a1, m1a2, 1)
+    fromtheta(M2, m2a1, m2a2, 2)
     
     #######################################################################
   
@@ -110,8 +160,8 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 40  # Maximum simulation time
-    time = np.arange(0., t_max, 0.001)  # Time vector
+    t_max = 5  # Maximum simulation time
+    time = np.arange(0., t_max, 0.002)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
