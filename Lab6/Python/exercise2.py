@@ -89,16 +89,16 @@ def exercise2():
     ############Exercise 2A ###############################################
     # rigth after creating and attaching both muscles:
     
-#    print(m1_origin, m2_origin)
-#    m1a1 =abs( abs(m1_origin[0]) - abs(m1_origin[1]))
-#    m1a2 =abs( abs(m1_insertion[0]) - abs(m1_insertion[1]))
-#    m1a1 = m1_origin[0] - m1_origin[1]
-#    m1a2 = m1_insertion[0] - m1_insertion[1]
-#    m2a1 = m2_origin[0] - m2_origin[1]
-#    m2a2 = m2_insertion[0] - m2_insertion[1]
-#    print(m1a1, m1a2)
-#    fromtheta(m1a1, m1a2, 1)
-#    fromtheta(m2a1, m2a2, 2)
+    print(m1_origin, m2_origin)
+    m1a1 =abs( abs(m1_origin[0]) - abs(m1_origin[1]))
+    m1a2 =abs( abs(m1_insertion[0]) - abs(m1_insertion[1]))
+    m1a1 = m1_origin[0] - m1_origin[1]
+    m1a2 = m1_insertion[0] - m1_insertion[1]
+    m2a1 = m2_origin[0] - m2_origin[1]
+    m2a2 = m2_insertion[0] - m2_insertion[1]
+    print(m1a1, m1a2)
+    fromtheta(m1a1, m1a2, 1)
+    fromtheta(m2a1, m2a2, 2)
     
     #######################################################################
   
@@ -110,8 +110,8 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 5  # Maximum simulation time
-    time = np.arange(0., t_max, 0.004)  # Time vector
+    t_max = 40  # Maximum simulation time
+    time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
@@ -195,7 +195,7 @@ def exercise2():
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
 
-    poincare_crossings(res, 0.1, 1, "Pendulum")
+    poincare_crossings(res, -2, 1, "Pendulum")
 
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
