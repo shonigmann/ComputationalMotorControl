@@ -18,8 +18,8 @@ from neural_system import NeuralSystem
 from pendulum_system import PendulumSystem
 from system import System
 from system_animation import SystemAnimation
-from system_parameters import (MuscleParameters, NetworkParameters,
-                               PendulumParameters)
+from system_parameters import (MuscleParameters, 
+                               PendulumParameters, NetworkParameters,)
 from system_simulation import SystemSimulation
 
 from poincare_crossings import poincare_crossings
@@ -134,7 +134,6 @@ def exercise2():
     # Attach the muscles
     muscles.attach(np.array([m1_origin, m1_insertion]),
                    np.array([m2_origin, m2_insertion]))
-  
     
     ############Exercise 2A ###############################################
     # rigth after creating and attaching both muscles:
@@ -142,17 +141,16 @@ def exercise2():
     print(m1_origin, m2_origin)
     m1a1 =abs( abs(m1_origin[0]) - abs(m1_origin[1]))
     m1a2 =abs( abs(m1_insertion[0]) - abs(m1_insertion[1]))
+
     m1a1 = m1_origin[0] - m1_origin[1]
     m1a2 = m1_insertion[0] - m1_insertion[1]
     m2a1 = m2_origin[0] - m2_origin[1]
     m2a2 = m2_insertion[0] - m2_insertion[1]
+
     print(m1a1, m1a2)
     fromtheta(M1, m1a1, m1a2, 1)
     fromtheta(M2, m2a1, m2a2, 2)
     
-    #######################################################################
-  
-    ##########Exercise 2B ################################################
     # Create a system with Pendulum and Muscles using the System Class
     # Check System.py for more details on System class
     sys = System()  # Instantiate a new system
@@ -161,10 +159,12 @@ def exercise2():
 
     ##### Time #####
     t_max = 5  # Maximum simulation time
+
     time = np.arange(0., t_max, 0.002)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
+    x0_P = np.array([0., 0.])  # Pendulum initial condition
 
     # Muscle Model initial condition
     x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
@@ -201,13 +201,6 @@ def exercise2():
     plt.legend(loc='upper right')
     plt.grid()
 
-    
-    print (len(act1), len(act2))
-    print(act1)
-    print(act2)
-#    print(act2)
-
-
     activations = np.hstack((act1, act2))
 
     # Method to add the muscle activations to the simulation
@@ -243,6 +236,24 @@ def exercise2():
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
+    plt.grid()
+    
+    # Plotting the results: Amplidute stimulation
+    plt.figure('Amplidute stimulation')
+    plt.title('Amplidute stimulation')
+    plt.plot(time, res[:, 1], label = 'Stimul. 0.2')
+    plt.xlabel('time [s]')
+    plt.ylabel('Position [rad]')
+    plt.legend(loc ='upper left')
+    plt.grid()
+    
+    # Plotting the results: frequency stimulation
+    plt.figure('Frequency stimulation')
+    plt.title('Frequency stimulation')
+    plt.plot(time, res[:, 1], label = 'w: 3 rad/s')
+    plt.xlabel('time [s]')
+    plt.ylabel('Position [rad]')
+    plt.legend(loc ='upper left')
     plt.grid()
 
     poincare_crossings(res, -2, 1, "Pendulum")

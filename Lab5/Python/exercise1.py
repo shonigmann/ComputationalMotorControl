@@ -1,10 +1,8 @@
 """ Lab 5 - Exercise 1 """
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d, Axes3D #<-- Note the capitalization! 
 
-#import plotly.plotly as py
-#import plotly.figure_factory as FF
-#from scipy.spatial import Delaunay
 from matplotlib import cm
 
 import numpy as np
@@ -68,7 +66,8 @@ def exercise1a():
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
     muscle_stretches = np.arange(.12,.30,.002)
-
+    
+    #muscle_tendon_forces = []  #Erase or comment
     muscle_active_forces = []
     muscle_passive_forces = []
     total_force = []
@@ -100,6 +99,7 @@ def exercise1a():
                                stimulation=muscle_stimulation,
                                muscle_length=muscle_stretch)
         
+#        muscle_tendon_forces.append(result.tendon_force[-1])#Erase or comment
         muscle_active_forces.append(result.active_force[-1])
         muscle_passive_forces.append(result.passive_force[-1]) 
         total_force.append(result.active_force[-1]+result.passive_force[-1])
@@ -223,7 +223,6 @@ def exercise1b():
         plt.ylabel('Active Force [N]')
         plt.legend(loc='upper right')
         plt.grid()
-        
         plt.subplot(3,1,2)
         plt.plot(stimulations, muscle_passive_forces, label='L_mtu = %.2f'%stretch)
         plt.xlabel('Stimulation')
@@ -339,10 +338,12 @@ def exercise1c():
         
         # Add the muscle to the system
         sys.add_muscle(muscle)
+        
         if muscle_length<.16:
             start_stretch_length = .16
         else:
             start_stretch_length = muscle_length
+            
         muscle_stretches = np.arange(start_stretch_length,1.2*muscle_length+.16,(1.2*muscle_length+.16-start_stretch_length)/40)
 
         muscle_active_forces = []
@@ -425,6 +426,7 @@ def exercise1c():
     plt.legend(loc='upper left')
     plt.grid()
 
+#    print(max_muscle_active_forces)
     # Plot max stretch lengths of max vals
     plt.figure('Isometric muscle experiment max Force stretch')
     plt.plot(muscle_lengths, max_force_stretch, label='active')
@@ -435,7 +437,6 @@ def exercise1c():
     plt.ylabel('Muscle Stretch of Max Force [m]')
     plt.legend(loc='upper left')
     plt.grid()
-
 
 def exercise1d():
     """ Exercise 1d
@@ -499,8 +500,9 @@ def exercise1d():
     load_table_small = [5, 10, 20, 50, 100]
 
     # Begin plotting
-    """plt.figure('Isotonic muscle experiment - load [5, 140] [N]')
-    max_vce += ex1d_for(sys, x0, time, time_step, time_stabilize, muscle_stimulation, load_table_small, True)
+    plt.figure('Isotonic muscle experiment - load [10, 200] [N]')
+    max_vce_small = ex1d_for(sys, x0, time, time_step, time_stabilize,
+                             muscle_stimulation, load_table_small,False)
 
     plt.title('Isotonic muscle experiment - load [5, 140] [N]')
     plt.xlabel('Time [s]')
@@ -521,7 +523,7 @@ def exercise1d():
     plt.xlabel('Time [s]')
     plt.ylabel('Muscle contractile velocity [m/s]')
     plt.legend(loc='upper right')
-    plt.grid()"""
+    plt.grid()
 
     # ---------------------------------------------
     # Plot velocity - tension relation
@@ -630,7 +632,7 @@ def exercise1f():
     # ---------------------------------------------
     # maximum force over stimulation
     # ---------------------------------------------
-    """
+    
     # Evaluate for different muscle stimulation
     muscle_stimulation = np.arange(0, 1.1, 0.1)
     max_active_force = []
@@ -668,12 +670,12 @@ def exercise1f():
     plt.xlabel('Stimulation [-]')
     plt.ylabel('Muscle sum forces [N]')
     plt.legend(loc='upper right')
-    plt.grid()"""
+    plt.grid()
 
     # ---------------------------------------------
     # force - velocity over stimulation
     # ---------------------------------------------
-    """muscle_stimulation = np.arange(0, 1.1, 0.1)
+    muscle_stimulation = np.arange(0, 1.1, 0.1)
 
     # Begin plotting
     for s in muscle_stimulation:
@@ -711,7 +713,7 @@ def exercise1f():
     plt.xlabel('Velocity contractile element [m/s]')
     plt.ylabel('Sum forces [N]')
     plt.legend(loc='upper right')
-    plt.grid()"""
+    plt.grid()
 
     # ---------------------------------------------
     # Plot velocity - tension relation
@@ -736,7 +738,7 @@ def exercise1():
 #    exercise1a()
 #    exercise1b()
 #    exercise1c()
-#    exercise1d()
+    exercise1d()
     exercise1f()
 
     if DEFAULT["save_figures"] is False:
