@@ -102,6 +102,7 @@ def exercise2():
     
     #######################################################################
   
+    ##########Exercise 2B ################################################
     # Create a system with Pendulum and Muscles using the System Class
     # Check System.py for more details on System class
     sys = System()  # Instantiate a new system
@@ -131,12 +132,6 @@ def exercise2():
     # Here you can define your muscle activation vectors
     # that are time dependent
 
-#    act1 = np.ones((len(time), 1)) * 0.
-#    act2 = np.ones((len(time), 1)) * 1.
-#    slope_h = np.arange(0., 1.0, 1./len(time))
-#    slope_v = slope_h.reshape(len(time), 1)
-#    act2 = slope_v
-#    slope_h = np.arange(0., 1.0, 1./len(time))
     wave_h1 = np.sin(time*3)*1               #makes a sinusoidal wave from 'time'
     wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
     
@@ -218,7 +213,7 @@ def exercise2():
             plt.figure(fig)
             save_figure(fig)
             plt.close(fig)
-
+    #######################################################################
 
 if __name__ == '__main__':
     from cmcpack import parse_args
