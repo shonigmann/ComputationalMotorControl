@@ -30,7 +30,7 @@ plt.rc('ytick', labelsize=14.0)    # fontsize of the tick labels
 
 
 def exercise3():
-#    exercise3a()
+  #  exercise3a()
     exercise3b()
 
 
@@ -204,7 +204,7 @@ def exercise3a():
     plt.plot(res[:, 0], res[:,-4], label='neuron4') 
     plt.xlabel('time [s]')
     plt.ylabel('Stimulation ')
-    plt.legend(loc='upper left')
+    plt.legend(loc='upper right')
     plt.grid()
     
 
@@ -342,7 +342,7 @@ def exercise3b():
 #    l = (len(time))
 #    l = int(l/2.0)
 #    print(l)
-    column1 = np.ones(( int(len(time)/2.) , 1))
+    column1 = np.zeros(( int(len(time)/2.) , 1))
     column2 = np.ones(( int(len(time)/2. ), 1))
     column = np.concatenate([column1, column2])
     print (column)
@@ -374,8 +374,12 @@ def exercise3b():
 
      # Plotting the results: Position(phase) vs time
     plt.figure('Pendulum Phase & Stimulation')
-    plt.title('Pendulum Phase & Stimulation')
-    plt.plot(res[:, 0], res[:,1])   #to plot pendulum Position (phase)
+    plt.title('Pendulum Position vs Time with Changing External Input')
+    switch_index = int(len(time)/2.)
+    plt.plot(res[0:switch_index-1, 0], res[0:switch_index-1,1], label = 'ExtIn = 0')   #to plot pendulum Position (phase) before external input
+    plt.plot(res[switch_index:-1, 0], res[switch_index:-1,1], label = 'ExtIn = 1')   #to plot pendulum Position (phase) before external input
+    
+    plt.legend(loc = 'upper right')
 #    plt.plot(res[:, 0], time)   #to plot position
 #    plt.plot(res[:, 0], res[:, -5:-1])  # to Plot neurons' states
     plt.xlabel('time [s]')
@@ -384,27 +388,35 @@ def exercise3b():
 
     # Plotting the results: Velocity vs Position (phase)
     plt.figure('Pendulum Vel v.s. Phase & Stimulation')
-    plt.title('Pendulum Vel v.s. Phase & Stimulation')
-    plt.plot(res[:, 1], res[:,2])   #to plot Velocity vs Position (phase)
+    plt.title('Pendulum Position vs. Velocity Phase Plot with Changing External Input')
+    plt.plot(res[0:switch_index-1, 1], res[0:switch_index-1,2], label = 'ExtIn = 0')   #to plot pendulum Position (phase) before external input
+    plt.plot(res[switch_index:-1, 1], res[switch_index:-1,2], label = 'ExtIn = 1')   #to plot pendulum Position (phase) before external input
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
-
+    plt.legend(loc = 'upper right')
+    
     # Plotting the results: Velocity vs time 
-    plt.figure('Pendulum Velocity & Stimulation')
+    plt.figure('Pendulum Velocity vs Time for Changing External Input')
     plt.title('Pendulum Velocity & Stimulation')
-    plt.plot(res[:, 0], res[:,2])   #to plot Velocity vs Position
+    plt.plot(res[0:switch_index-1, 0], res[0:switch_index-1,2], label = 'ExtIn = 0')   #to plot pendulum Velocity before external input
+    plt.plot(res[switch_index:-1, 0], res[switch_index:-1,2], label = 'ExtIn = 1')
+    plt.legend(loc = 'upper right')
     plt.xlabel('time [s]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
 
     # Plotting the results: Output of the network
     plt.figure('Network output & Stimulation')
-    plt.title('Network output & Stimulation')
-    plt.plot(res[:, 0], res[:,-4], label='neuron1')   #to plot Velocity vs Position
-    plt.plot(res[:, 0], res[:,-3], label='neuron2') 
-    plt.plot(res[:, 0], res[:,-2], label='neuron3') 
-    plt.plot(res[:, 0], res[:,-1], label='neuron4') 
+    plt.title('Network Output for Changing External Input')
+    plt.plot(res[0:switch_index-1, 0], res[0:switch_index-1,-4],'m', label='neuron1')   #to plot Velocity vs Position
+    plt.plot(res[0:switch_index-1, 0], res[0:switch_index-1,-3],'g', label='neuron2') 
+    plt.plot(res[0:switch_index-1, 0], res[0:switch_index-1,-2],'b', label='neuron3') 
+    plt.plot(res[0:switch_index-1, 0], res[0:switch_index-1,-1],'r', label='neuron4') 
+    plt.plot(res[switch_index:-1, 0], res[switch_index:-1,-4], color='orchid')   #to plot Velocity vs Position
+    plt.plot(res[switch_index:-1, 0], res[switch_index:-1,-3],color='forestgreen') 
+    plt.plot(res[switch_index:-1, 0], res[switch_index:-1,-2], color='royalblue') 
+    plt.plot(res[switch_index:-1, 0], res[switch_index:-1,-1], color='indianred') 
     plt.xlabel('time [s]')
     plt.ylabel('Stimulation ')
     plt.legend(loc='upper left')
