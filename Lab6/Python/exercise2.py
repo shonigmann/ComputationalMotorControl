@@ -22,6 +22,7 @@ from system_parameters import (MuscleParameters, NetworkParameters,
                                PendulumParameters)
 from system_simulation import SystemSimulation
 
+from poincare_crossings import poincare_crossings
 
 # Global settings for plotting
 # You may change as per your requirement
@@ -34,7 +35,57 @@ plt.rc('ytick', labelsize=14.0)    # fontsize of the tick labels
 
 DEFAULT["save_figures"] = True
 
+############Exercise 2A ###############################################
+    #KPP: function called from exercise2() below
+def fromtheta(muscle, a1, a2, name):
+    
+    muscle_length = []
+    moment_arm = []
+    thetas = np.arange(-np.pi/4, np.pi/4 , 0.001)
+    
+    for theta in thetas: 
+        
+        L = np.sqrt(a1**2+a2**2+2*a1*a2*np.sin(theta))
+        h = a1*a2*np.cos(theta)/L
+        
+        muscle_length.append(L)
+        moment_arm.append(h)
+        
+    plt.figure('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.plot(thetas, muscle_length, label ='Length')
+    plt.title('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Distance [m]')
+    plt.legend(loc='upper right')
+    plt.grid() 
+                
+    plt.figure('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.plot(thetas, np.abs(moment_arm), label ='Moment Arm')
+    plt.title('Muscle %.1i v.s. Pendulum Angle' %(name))
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Distance [m]')
+    plt.legend(loc='upper right')
+    plt.grid() 
 
+    #calculate the total muscle force at each position to determine the max torque for the muscle
+    passive_forces = []
+    active_forces = []
+    total_forces = []
+    for length in muscle_length:                  
+        passive_forces.append(muscle.compute_passive_force(length))
+        active_forces.append(muscle.compute_active_force(length,0,1))
+        total_forces = np.add(passive_forces,active_forces)
+    
+    total_torques = np.multiply(total_forces,moment_arm)
+    
+    plt.figure('Muscle Torque v.s. Pendulum Angle')
+    plt.plot(thetas, np.abs(total_torques), label ='Muscle %.1i' %(name))
+    plt.title('Max Muscle Torque v.s. Pendulum Angle')
+    plt.xlabel('Theta [rad]')
+    plt.ylabel('Muscle Torque (abs) [Nm]')
+    plt.legend(loc='upper right')
+    plt.grid() 
+    
 def exercise2():
     """ Main function to run for Exercise 2.
 
@@ -83,7 +134,25 @@ def exercise2():
     # Attach the muscles
     muscles.attach(np.array([m1_origin, m1_insertion]),
                    np.array([m2_origin, m2_insertion]))
-
+  
+    
+    ############Exercise 2A ###############################################
+    # rigth after creating and attaching both muscles:
+    
+    print(m1_origin, m2_origin)
+    m1a1 =abs( abs(m1_origin[0]) - abs(m1_origin[1]))
+    m1a2 =abs( abs(m1_insertion[0]) - abs(m1_insertion[1]))
+    m1a1 = m1_origin[0] - m1_origin[1]
+    m1a2 = m1_insertion[0] - m1_insertion[1]
+    m2a1 = m2_origin[0] - m2_origin[1]
+    m2a2 = m2_insertion[0] - m2_insertion[1]
+    print(m1a1, m1a2)
+    fromtheta(M1, m1a1, m1a2, 1)
+    fromtheta(M2, m2a1, m2a2, 2)
+    
+    #######################################################################
+  
+    ##########Exercise 2B ################################################
     # Create a system with Pendulum and Muscles using the System Class
     # Check System.py for more details on System class
     sys = System()  # Instantiate a new system
@@ -91,8 +160,8 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
-    time = np.arange(0., t_max, 0.001)  # Time vector
+    t_max = 5  # Maximum simulation time
+    time = np.arange(0., t_max, 0.002)  # Time vector
 
     ##### Model Initial Conditions #####
     x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
@@ -113,22 +182,43 @@ def exercise2():
     # Here you can define your muscle activation vectors
     # that are time dependent
 
-    act1 = np.ones((len(time), 1)) * 1.
-    act2 = np.ones((len(time), 1)) * 0.05
+    wave_h1 = np.sin(time*3)*1               #makes a sinusoidal wave from 'time'
+    wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
+    
+    wave_h1[wave_h1<0] = 0      #formality of passing negative values to zero
+    wave_h2[wave_h2<0] = 0      #formality of passing negative values to zero
+    
+    act1 = wave_h1.reshape(len(time), 1) #makes a vertical array like act1
+    act2 = wave_h2.reshape(len(time), 1) #makes a vertical array like act1
+    
+    # Plotting the waveforms
+    plt.figure('Muscle Activations')
+    plt.title('Muscle Activation Functions')
+    plt.plot(time, wave_h1, label='Muscle 1')
+    plt.plot(time, wave_h2, label='Muscle 2')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Muscle Excitation')
+    plt.legend(loc='upper right')
+    plt.grid()
+
+    
+    print (len(act1), len(act2))
+    print(act1)
+    print(act2)
+#    print(act2)
+
 
     activations = np.hstack((act1, act2))
 
     # Method to add the muscle activations to the simulation
-
     sim.add_muscle_activations(activations)
 
     # Simulate the system for given time
-
     sim.initalize_system(x0, time)  # Initialize the system state
 
     #: If you would like to perturb the pedulum model then you could do
     # so by
-    sim.sys.pendulum_sys.parameters.PERTURBATION = True
+    sim.sys.pendulum_sys.parameters.PERTURBATION = False
     # The above line sets the state of the pendulum model to zeros between
     # time interval 1.2 < t < 1.25. You can change this and the type of
     # perturbation in
@@ -148,12 +238,14 @@ def exercise2():
     muscle2_results = sim.sys.muscle_sys.Muscle2.results
 
     # Plotting the results
-    plt.figure('Pendulum')
+    plt.figure('Pendulum_phase')
     plt.title('Pendulum Phase')
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
+
+    poincare_crossings(res, -2, 1, "Pendulum")
 
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
@@ -171,7 +263,7 @@ def exercise2():
             plt.figure(fig)
             save_figure(fig)
             plt.close(fig)
-
+    #######################################################################
 
 if __name__ == '__main__':
     from cmcpack import parse_args

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """ Lab 3 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 
