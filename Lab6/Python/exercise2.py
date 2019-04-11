@@ -143,7 +143,7 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 6  # Maximum simulation time
+    t_max = 2*np.pi  # Maximum simulation time
     time = np.arange(0., t_max, 0.002)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -172,7 +172,7 @@ def exercise2():
 #    slope_v = slope_h.reshape(len(time), 1)
 #    act2 = slope_v
 #    slope_h = np.arange(0., 1.0, 1./len(time))
-    wave_h1 = np.sin(time*3)*2               #makes a sinusoidal wave from 'time'
+    wave_h1 = np.sin(time*3)*1               #makes a sinusoidal wave from 'time'
     wave_h2 = np.sin(time*3 + np.pi)*1       #makes a sinusoidal wave from 'time'
     
     wave_h1[wave_h1<0] = 0      #formality of passing negative values to zero
@@ -198,7 +198,7 @@ def exercise2():
 
     #: If you would like to perturb the pedulum model then you could do
     # so by
-    sim.sys.pendulum_sys.parameters.PERTURBATION = True
+    sim.sys.pendulum_sys.parameters.PERTURBATION = False
     # The above line sets the state of the pendulum model to zeros between
     # time interval 1.2 < t < 1.25. You can change this and the type of
     # perturbation in
@@ -223,6 +223,24 @@ def exercise2():
     plt.plot(res[:, 1], res[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
+    plt.grid()
+    
+    # Plotting the results: Amplidute stimulation
+    plt.figure('Amplidute stimulation')
+    plt.title('Amplidute stimulation')
+    plt.plot(time, res[:, 1], label = 'Stimul. 0.2')
+    plt.xlabel('time [s]')
+    plt.ylabel('Position [rad]')
+    plt.legend(loc ='upper left')
+    plt.grid()
+    
+    # Plotting the results: frequency stimulation
+    plt.figure('Frequency stimulation')
+    plt.title('Frequency stimulation')
+    plt.plot(time, res[:, 1], label = 'w: 3 rad/s')
+    plt.xlabel('time [s]')
+    plt.ylabel('Position [rad]')
+    plt.legend(loc ='upper left')
     plt.grid()
 
     # To animate the model, use the SystemAnimation class

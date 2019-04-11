@@ -95,8 +95,6 @@ def exercise3a():
                                           [ 0, -1,  0,  0]]))*5
     print(N_params.w, N_params.D, N_params.tau, N_params.b, N_params.exp )
 
-    
-
     # Create a new neural network with above parameters
     neural_network = NeuralSystem(N_params)
     pylog.info('Neural system initialized \n {}'.format(
@@ -150,6 +148,9 @@ def exercise3a():
 #    sim.add_external_inputs_to_network(ext_in)
     sim.initalize_system(x0, time)  # Initialize the system state
 
+
+    sim.sys.pendulum_sys.parameters.PERTURBATION = False
+
     # Integrate the system for the above initialized state and time
     sim.simulate()
 
@@ -197,7 +198,10 @@ def exercise3a():
     # Plotting the results: Output of the network
     plt.figure('Network output')
     plt.title('Network output')
-    plt.plot(res[:, 0], res[:,-5:-1], label='neuron1')   #to plot Velocity vs Position
+    plt.plot(res[:, 0], res[:,-1], label='neuron1')   #to plot Velocity vs Position
+    plt.plot(res[:, 0], res[:,-2], label='neuron2') 
+    plt.plot(res[:, 0], res[:,-3], label='neuron3') 
+    plt.plot(res[:, 0], res[:,-4], label='neuron4') 
     plt.xlabel('time [s]')
     plt.ylabel('Stimulation ')
     plt.legend(loc='upper left')
@@ -302,7 +306,7 @@ def exercise3b():
     sys.add_neural_system(neural_network)
 
     ##### Time #####
-    t_max = 2.  # Maximum simulation time
+    t_max = 4.  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -334,15 +338,15 @@ def exercise3b():
 #    
 #    act1 = wave_h1.reshape(len(time), 1) #makes a vertical array like act1
 #    act2 = wave_h2.reshape(len(time), 1) #makes a vertical array like act1
-    print (type(float(len(time))))
-    l = (len(time))
-    l = int(l/2.0)
-    print(l)
-    column = np.ones((l, 1))*0
-    column = np.append(np.ones((l, 1)))
+#    print (type(float(len(time))))
+#    l = (len(time))
+#    l = int(l/2.0)
+#    print(l)
+    column1 = np.ones(( int(len(time)/2.) , 1))
+    column2 = np.ones(( int(len(time)/2. ), 1))
+    column = np.concatenate([column1, column2])
     print (column)
-    print (type(len(time)))
-    
+   
 
 #    ext_in = np.hstack((act1, column, act2, column))    
     ext_in = np.hstack((column, column, column, column))
@@ -397,20 +401,16 @@ def exercise3b():
     # Plotting the results: Output of the network
     plt.figure('Network output & Stimulation')
     plt.title('Network output & Stimulation')
-    plt.plot(res[:, 0], res[:,-5:-1], label='neuron1')   #to plot Velocity vs Position
+    plt.plot(res[:, 0], res[:,-4], label='neuron1')   #to plot Velocity vs Position
+    plt.plot(res[:, 0], res[:,-3], label='neuron2') 
+    plt.plot(res[:, 0], res[:,-2], label='neuron3') 
+    plt.plot(res[:, 0], res[:,-1], label='neuron4') 
     plt.xlabel('time [s]')
     plt.ylabel('Stimulation ')
     plt.legend(loc='upper left')
     plt.grid()
     
-    # Plotting the results: Output of the network
-    plt.figure('Network output & Stimulation')
-    plt.title('Network output & Stimulation')
-    plt.plot(res[:, 0], res[:,-5:-1], label='neuron1')   #to plot Velocity vs Position
-    plt.xlabel('time [s]')
-    plt.ylabel('Stimulation ')
-    plt.legend(loc='upper left')
-    plt.grid()
+
 
     if DEFAULT["save_figures"] is False:
         plt.show()
