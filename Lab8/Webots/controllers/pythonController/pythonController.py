@@ -7,6 +7,7 @@ import cmc_pylog as pylog
 from controller import Supervisor
 from cmc_robot import SalamanderCMC
 
+from controller import Robot, LED, DistanceSensor # might be useful
 
 class RobotResetControl(object):
     """Robot reset control"""
