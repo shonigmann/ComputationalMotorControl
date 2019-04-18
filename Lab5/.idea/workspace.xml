@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b1875bb1-d6af-4557-b3fc-8e2f21774ac6" name="Default Changelist" comment="" />
+    <list default="true" id="b1875bb1-d6af-4557-b3fc-8e2f21774ac6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,7 +15,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Python/exercise1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="11085">
+            <state relative-caret-position="880">
               <caret line="739" column="1" selection-start-line="739" selection-start-column="1" selection-end-line="739" selection-end-column="1" />
               <folding>
                 <element signature="e#28#59#0" expanded="true" />
@@ -159,9 +161,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1938883" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1938883" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -183,7 +184,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Python/exercise1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11085">
+        <state relative-caret-position="880">
           <caret line="739" column="1" selection-start-line="739" selection-start-column="1" selection-end-line="739" selection-end-column="1" />
           <folding>
             <element signature="e#28#59#0" expanded="true" />

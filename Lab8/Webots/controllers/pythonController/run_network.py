@@ -60,6 +60,7 @@ def main(plot=True):
     else:
         save_figures()
 
+
 if __name__ == '__main__':
     main(plot=not save_plots())
 
