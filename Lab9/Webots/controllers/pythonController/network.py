@@ -29,12 +29,12 @@ def network_ode(_time, state, parameters):
 def motor_output(phases, amplitudes):
     """Motor output"""
     nb_body_joints = 10
-    d_q = np.zeros(nb_body_joints)
+    q = np.zeros(nb_body_joints)
 
     for i in range(nb_body_joints):
-        d_q[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i+10] * (1 + np.cos(phases[i + 10]))
+        q[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i+10] * (1 + np.cos(phases[i + 10]))
 
-    return d_q
+    return q
 
 
 class ODESolver(object):
