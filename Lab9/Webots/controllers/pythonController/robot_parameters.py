@@ -40,21 +40,21 @@ class RobotParameters(dict):
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
-        pylog.warning("Coupling weights must be set")
+        self.freqs = parameters.freqs
 
     def set_coupling_weights(self, parameters):
         """Set coupling weights"""
-        pylog.warning("Coupling weights must be set")
+        self.coupling_weights = parameters.coupling_weights
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
-        pylog.warning("Phase bias must be set")
+        self.phase_bias = parameters.phase_bias
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
-        pylog.warning("Convergence rates must be set")
+        self.amplitudes_rate = parameters.amplitudes_rate
 
     def set_nominal_amplitudes(self, parameters):
         """Set nominal amplitudes"""
-        pylog.warning("Nominal amplitudes must be set")
+        self.nominal_amplitudes = parameters.nominal_amplitudes
 
