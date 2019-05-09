@@ -39,7 +39,7 @@ def motor_output(phases, amplitudes):
         if amplitudes[i + 2 * nb_body_joints] == 0:
             q[i + nb_body_joints] = 0
         else:
-    q[i + nb_body_joints] = -phases[i + 2 * nb_body_joints]
+            q[i + nb_body_joints] = -phases[i + 2 * nb_body_joints]
 
     return q
 
