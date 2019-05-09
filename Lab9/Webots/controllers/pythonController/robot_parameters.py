@@ -1,5 +1,6 @@
 """Robot parameters"""
 
+import math
 import numpy as np
 import cmc_pylog as pylog
 
@@ -17,18 +18,19 @@ class RobotParameters(dict):
         self.n_body_joints = parameters.n_body_joints
         self.n_legs_joints = parameters.n_legs_joints
         self.n_joints = self.n_body_joints + self.n_legs_joints
+
         self.n_oscillators_body = 2*self.n_body_joints
         self.n_oscillators_legs = self.n_legs_joints
         self.n_oscillators = self.n_oscillators_body + self.n_oscillators_legs
+
         self.freqs = np.zeros(self.n_oscillators)
-        self.coupling_weights = np.zeros([
-            self.n_oscillators,
-            self.n_oscillators
-        ])
+        self.coupling_weights = np.zeros([self.n_oscillators, self.n_oscillators])
         self.phase_bias = np.zeros([self.n_oscillators, self.n_oscillators])
+
         self.rates = np.zeros(self.n_oscillators)
         self.nominal_amplitudes = np.zeros(self.n_oscillators)
         self.update(parameters)
+
 
     def update(self, parameters):
         """Update network from parameters"""

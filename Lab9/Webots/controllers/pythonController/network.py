@@ -29,7 +29,8 @@ def network_ode(_time, state, parameters):
 def motor_output(phases, amplitudes):
     """Motor output"""
     nb_body_joints = 10
-    q = np.zeros(nb_body_joints)
+    nb_legs_joints = 4
+    q = np.zeros(nb_body_joints + nb_legs_joints)
 
     for i in range(nb_body_joints):
         q[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i+10] * (1 + np.cos(phases[i + 10]))
