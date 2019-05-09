@@ -8,12 +8,12 @@ from solvers import euler, rk4
 
 def phases_ode(time, phases, freqs, coupling_weights, phases_desired):
     """Network phases ODE"""
-    return np.zeros_like(phases)
+    return 2*np.pi*freqs + np.sum(coupling_weights*np.sin(phases_desired - phases))
 
 
 def amplitudes_ode(time, amplitudes, rate, amplitudes_desired):
     """Network amplitudes ODE"""
-    return np.zeros_like(amplitudes)
+    return rate*(amplitudes_desired - amplitudes)
 
 
 def motor_output(phases_left, phases_right, amplitudes_left, amplitudes_right):
