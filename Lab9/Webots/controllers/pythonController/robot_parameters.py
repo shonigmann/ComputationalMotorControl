@@ -31,7 +31,6 @@ class RobotParameters(dict):
         self.nominal_amplitudes = np.zeros(self.n_oscillators)
         self.update(parameters)
 
-
     def update(self, parameters):
         """Update network from parameters"""
         self.set_frequencies(parameters)  # f_i
