@@ -18,8 +18,9 @@ def network_ode(_time, state, parameters):
     weights_size = parameters.coupling_weights[0].size
     d_phases = np.zeros(weights_size)
     for i in range(weights_size):
-        d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] +
-                                                           np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
+        d_phases[i] = 2*np.pi*parameters.freqs[i] + 
+                        np.sum(amplitudes * parameters.coupling_weights[i] *
+                               np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
 
     d_amplitudes = parameters.amplitudes_rate * (parameters.nominal_amplitudes - amplitudes)
 

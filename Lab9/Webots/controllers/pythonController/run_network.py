@@ -1,4 +1,4 @@
-"""Run network without Webots"""
+"""Run without Webots"""
 
 import time
 import numpy as np

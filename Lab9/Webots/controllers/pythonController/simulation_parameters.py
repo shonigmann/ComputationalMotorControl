@@ -18,7 +18,7 @@ class SimulationParameters(dict):
         self.amplitude_gradient = None
 
         vec_size = 2*self.n_body_joints + self.n_legs_joints
-
+        print(vec_size)
         self.coupling_weights = np.zeros([vec_size, vec_size])  # w_ij
         self.phase_bias = np.zeros([vec_size, vec_size])  # theta_ij
 
