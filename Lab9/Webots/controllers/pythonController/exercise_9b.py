@@ -16,8 +16,8 @@ def exercise_9b(world, timestep, reset):
         SimulationParameters(
             simulation_duration=5,
             drive=1,
-            amplitudes=[1, 2, 3],
-            phase_lag=[1, 2, 3],
+            nominal_amplitudes=nominal_amplitudes,
+            body_phase_bias=body_phase_bias,
             turn=1,
             # ...
         )
@@ -35,5 +35,3 @@ def exercise_9b(world, timestep, reset):
             int(1000 * parameters.simulation_duration / timestep),
             logs="./logs/9b/simulation_{}.npz".format(simulation_i)
         )
-
-    plot_results.main()

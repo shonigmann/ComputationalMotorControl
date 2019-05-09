@@ -1,5 +1,6 @@
 """Plot results"""
 
+import os.path
 import numpy as np
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
@@ -76,19 +77,19 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
 def main(plot=True):
     """Main"""
     # Load data
-    with np.load('logs/example/simulation_1.npz') as data:
-        timestep = float(data["timestep"])
-        amplitude = data["amplitudes"]
-        phase_lag = data["phase_lag"]
-        link_data = data["links"][:, 0, :]
-        joints_data = data["joints"]
-    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    num_files = len([f for f in os.listdir('logs/9b/')])
+    for i in range(num_files):
+        with np.load('logs/9b/simulation_{}.npz'.format(i)) as data:
+            timestep = float(data["timestep"])
+            amplitude = data["amplitudes"]
+            phase_lag = data["phase_lag"]
+            link_data = data["links"][:, 0, :]
+            joints_data = data["joints"]
+        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
 
-    # Plot data
-    plt.figure("Positions")
-    plot_positions(times, link_data)
-
-    print(joints_data)
+        # Plot data
+        plt.figure("Positions{}".format(i))
+        plot_positions(times, link_data)
 
     # Show plots
     if plot:
