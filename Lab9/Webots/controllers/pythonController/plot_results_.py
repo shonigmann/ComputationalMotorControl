@@ -76,47 +76,24 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
 def main(plot=True):
     """Main"""
     # Load data
-    
-#    while e =! 16: 
-#        with np.load('logs/9b/simulation_1.npz') as data:
-#            timestep = float(data["timestep"])
-#            amplitude = data["amplitudes"]
-#            phase_lag = data["phase_lag"]
-#            link_data = data["links"][:, 0, :]
-#            joints_data = data["joints"]
-#        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
-#
-#        # Plot data
-#        plt.figure("Positions")
-#        plot_positions(times, link_data)
-#    
-#        print(joints_data)
-#
-#        # Show plots
-#        if plot:
-#            plt.show()
-#        else:
-#            save_figures()
+    with np.load('logs/9b/simulation_1.npz') as data:
+        timestep = float(data["timestep"])
+        amplitude = data["amplitudes"]
+        phase_lag = data["phase_lag"]
+        link_data = data["links"][:, 0, :]
+        joints_data = data["joints"]
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
 
-        with np.load('logs/9b/simulation_1.npz') as data:
-            timestep = float(data["timestep"])
-            amplitude = data["amplitudes"]
-            phase_lag = data["phase_lag"]
-            link_data = data["links"][:, 0, :]
-            joints_data = data["joints"]
-            times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    # Plot data
+    plt.figure("Positions")
+    plot_positions(times, link_data)
 
-        # Plot data
-        plt.figure("Positions")
-        plot_positions(times, link_data)
-    
-        print(joints_data)
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()
 
-        # Show plots
-        if plot:
-            plt.show()
-        else:
-            save_figures()
 
 if __name__ == '__main__':
     main(plot=not save_plots())

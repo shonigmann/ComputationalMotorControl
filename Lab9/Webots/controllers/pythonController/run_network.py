@@ -1,9 +1,10 @@
-"""Run without Webots"""
+"""Run network without Webots"""
 
 import time
 import numpy as np
 import matplotlib.pyplot as plt
 import cmc_pylog as pylog
+import plot_results
 from network import SalamanderNetwork
 from save_figures import save_figures
 from parse_args import save_plots
@@ -74,7 +75,7 @@ def run_network(duration, update=False, drive=0):
 
     # Implement plots of network results
     pylog.warning("Implement plots")
-
+    plot_results.main()
 
 def main(plot):
     """Main"""
