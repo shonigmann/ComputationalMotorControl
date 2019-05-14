@@ -69,6 +69,27 @@ def plot_reverse_trajectory():
             plt.axis("equal")
             plt.grid(True)
             
+def plot_9f():
+    """Plot positions"""
+    for file in os.listdir('logs/9f'):
+        with np.load(os.path.join('logs/9f/',file)) as data:
+            #amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]        
+            # Plot data
+            n_links = len(data["links"][0,:,0])
+            joint_data = data["joints"]
+            timestep = float(data["timestep"])
+            
+            times = np.arange(0, timestep*np.shape(joint_data)[0], timestep)
+            
+            plt.figure("Trajectory")
+                        
+            for i in range(n_links):
+                plt.plot(times, joint_data[:, i,0]+i*np.pi, label = "x%d" % (i+1))
+            plt.xlabel("t [s]")
+            plt.ylabel("link phase [rad]")
+            plt.legend()
+            
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     """Plot result
 
@@ -135,7 +156,8 @@ def main(plot=True, file=None):
 #                plot_trajectory(link_data)
 #                print(joints_data)
         #plot_turn_trajectory()
-        plot_reverse_trajectory()
+        #plot_reverse_trajectory()
+        plot_9f()
     else:
         with np.load(file) as data:
             timestep = float(data["timestep"])

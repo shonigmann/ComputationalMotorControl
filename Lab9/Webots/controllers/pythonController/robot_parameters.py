@@ -44,6 +44,8 @@ class RobotParameters(dict):
         self.d_lim_body = [0,0]
         self.d_lim_limb = [0,0]
         
+        self.b = [0,0,0,0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
+        
         self.use_drive_saturation = 0
         
         self.update(parameters)
@@ -67,7 +69,7 @@ class RobotParameters(dict):
     def set_coupling_weights(self, parameters):
         """Set coupling weights"""
         weight = parameters.coupling_weights
-
+        limb_weight = parameters.limb_body_weight
         for i in range(self.n_body_joints):
             if i != self.n_body_joints-1:
                 self.coupling_weights[i, i + 1] = weight
@@ -78,12 +80,27 @@ class RobotParameters(dict):
 
             self.coupling_weights[i, i + self.n_body_joints] = weight
             self.coupling_weights[i + self.n_body_joints, i] = weight
+            
+            #TODO: SET LEG->BODY COUPLING HERE
+        for i in range(self.n_legs_joints):
+            index = i+self.n_body_joints*2
+            index_transverse = (index+1)%self.n_legs_joints + self.n_body_joints #adjacent index either fwd or bck from current
+            index_saggital = (index+2)%self.n_legs_joints + self.n_body_joints #adjacent index either left or right of current
+            
+            self.coupling_weights[index,index_transverse] = weight
+            self.coupling_weights[index,index_saggital] = weight
+
+            #set weight from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
+            for j in range(self.n_body_joints//2):
+                self.coupling_weights[index,i*self.n_body_joints//2+j] = limb_weight
+         
+        #print(self.coupling_weights)
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
         body_bias = parameters.body_phase_bias
         limb_bias = parameters.limb_phase_bias
-
+        print(limb_bias)
         for i in range(self.n_body_joints):
             if i != self.n_body_joints-1:
                 self.phase_bias[i, i + 1] = -body_bias
@@ -91,9 +108,26 @@ class RobotParameters(dict):
 
                 self.phase_bias[i + 1, i] = body_bias
                 self.phase_bias[i + self.n_body_joints + 1, i + self.n_body_joints] = body_bias
-
+            
             self.phase_bias[i, i + self.n_body_joints] = limb_bias
             self.phase_bias[i + self.n_body_joints, i] = limb_bias
+            
+        for i in range(self.n_legs_joints):
+            index = i+self.n_body_joints*2
+            index_transverse = (index+1)%self.n_legs_joints + self.n_body_joints #adjacent index either fwd or bck from current
+            index_saggital = (index+2)%self.n_legs_joints + self.n_body_joints #adjacent index either left or right of current
+            
+            self.phase_bias[index,index_transverse] = limb_bias
+            self.phase_bias[index,index_saggital] = limb_bias
+            
+            #set bias from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
+            for j in range(self.n_body_joints//2):
+                self.phase_bias[index,i*self.n_body_joints//2+j] = limb_bias
+         
+        #print(self.phase_bias)
+                
+                
+        #print(self.phase_bias[2*self.n_body_joints:(2*self.n_body_joints+self.n_legs_joints),2*self.n_body_joints:(2*self.n_body_joints+self.n_legs_joints)])
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
@@ -141,17 +175,25 @@ class RobotParameters(dict):
             if self.limb_drive_left <= self.d_lim_limb[1] and self.limb_drive_left > self.d_lim_limb[0]:
                 llfreqs = self.cv_limb[0]*self.limb_drive_left+self.cv_limb[1]
                 llAmps = self.cR_body[0]*self.limb_drive_left + self.cR_body[1]
+                self.b[0] = 0.0
+                self.b[1] = 0.0
             else:
                 llfreqs = self.v_sat
                 llAmps = self.R_sat
-            
+                self.b[0] = 10.0
+                self.b[1] = 10.0
+                
             if self.limb_drive_right <= self.d_lim_body[1] and self.limb_drive_right > self.d_lim_body[0]:
                 rlfreqs = self.cv_limb[0]*self.limb_drive_right+self.cv_limb[1]
                 rlAmps = self.cR_body[0]*self.limb_drive_right + self.cR_body[1]
+                self.b[3] = 0.0
+                self.b[2] = 0.0
             else:
                 rlfreqs = self.v_sat
                 rlAmps = self.R_sat
-            
+                self.b[2] = 10.0
+                self.b[3] = 10.0
+                
             #note: Figure 1 lists the leg order as FL, FR, BL, BR which goes against the F->B, then L->R that was used in the spine. The spine notation will be used here for now
             self.freqs = np.concatenate([leftfreqs*np.ones(self.n_body_joints), rightfreqs*np.ones(self.n_body_joints), llfreqs*np.ones(self.n_legs_joints//2), rlfreqs*np.ones(self.n_legs_joints//2)])
             self.nominal_amplitudes = np.concatenate([leftAmps*np.ones(self.n_body_joints), rightAmps*np.ones(self.n_body_joints), llAmps*np.ones(self.n_legs_joints//2), rlAmps*np.ones(self.n_legs_joints//2)])

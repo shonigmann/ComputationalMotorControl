@@ -13,6 +13,9 @@ def exercise_9d1(world, timestep, reset):
             simulation_duration=10,
             use_drive_saturation=1,
             turn=turn,
+            shes_got_legs = 1,
+            limb_drive_left = 4.0,
+            limb_drive_right = 4.0,
             # ...
         )
         for turn in np.linspace(-.2,.2, 7)
@@ -40,6 +43,9 @@ def exercise_9d2(world, timestep, reset):
             use_drive_saturation=1,
             reverse = reverse,
             turn = turn,
+            shes_got_legs = 1,
+            limb_drive_left = 10.0,
+            limb_drive_right = 10.0,
             # ...
         )
         for turn in np.linspace(-.2,.2, 3)            

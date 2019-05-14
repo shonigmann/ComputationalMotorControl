@@ -16,17 +16,22 @@ def network_ode(_time, state, parameters):
     """
     phases = state[:parameters.n_oscillators]
     amplitudes = state[parameters.n_oscillators:2*parameters.n_oscillators]
-
+  
+    b = parameters.b
+    #print(b)
     weights_size = parameters.coupling_weights[0].size
     d_phases = np.zeros(weights_size)
     for i in range(weights_size):
-        d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
+        if(i<parameters.n_body_joints*2):
+            d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
                                                            np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
+        else:
+            d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
+                                                           np.sin(phases[:] - phases[i] - parameters.phase_bias[i])) + b[i-parameters.n_body_joints*2]*np.sin(phases[i]+np.pi)               
 
     d_amplitudes = parameters.amplitudes_rate * (parameters.nominal_amplitudes - amplitudes)
 
     return np.concatenate([d_phases, d_amplitudes])
-
 
 def motor_output(phases, amplitudes):
     """Motor output"""
