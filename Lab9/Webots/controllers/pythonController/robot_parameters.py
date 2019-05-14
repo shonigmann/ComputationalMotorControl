@@ -14,6 +14,9 @@ class RobotParameters(dict):
     def __init__(self, parameters):
         super(RobotParameters, self).__init__()
 
+        # Initialize some flags
+        self.smart = parameters.smart
+
         # Initialise parameters
         self.n_body_joints = parameters.n_body_joints
         self.n_legs_joints = parameters.n_legs_joints
@@ -29,6 +32,7 @@ class RobotParameters(dict):
 
         self.rates = np.zeros(self.n_oscillators)
         self.nominal_amplitudes = np.zeros(self.n_oscillators)
+        self.amplitude_gradient = 0.0
         self.update(parameters)
 
     def update(self, parameters):
@@ -38,6 +42,7 @@ class RobotParameters(dict):
         self.set_phase_bias(parameters)  # theta_i
         self.set_amplitudes_rate(parameters)  # a_i
         self.set_nominal_amplitudes(parameters)  # R_i
+        self.set_gradient_amplitude(parameters)
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
@@ -61,19 +66,19 @@ class RobotParameters(dict):
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
-        body_bias = parameters.body_phase_bias
-        limb_bias = parameters.limb_phase_bias
+        axialCPG_phase_bias = parameters.axialCPG_phase_bias
+        antiphase_bias = parameters.antiphase_bias
 
         for i in range(self.n_body_joints):
             if i != self.n_body_joints-1:
-                self.phase_bias[i, i + 1] = -body_bias
-                self.phase_bias[i + self.n_body_joints, i + self.n_body_joints + 1] = -body_bias
+                self.phase_bias[i, i + 1] = -axialCPG_phase_bias
+                self.phase_bias[i + self.n_body_joints, i + self.n_body_joints + 1] = -axialCPG_phase_bias
 
-                self.phase_bias[i + 1, i] = body_bias
-                self.phase_bias[i + self.n_body_joints + 1, i + self.n_body_joints] = body_bias
+                self.phase_bias[i + 1, i] = axialCPG_phase_bias
+                self.phase_bias[i + self.n_body_joints + 1, i + self.n_body_joints] = axialCPG_phase_bias
 
-            self.phase_bias[i, i + self.n_body_joints] = limb_bias
-            self.phase_bias[i + self.n_body_joints, i] = limb_bias
+            self.phase_bias[i, i + self.n_body_joints] = antiphase_bias
+            self.phase_bias[i + self.n_body_joints, i] = antiphase_bias
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
@@ -83,4 +88,9 @@ class RobotParameters(dict):
         """Set nominal amplitudes"""
         amplitude = parameters.nominal_amplitudes
         self.nominal_amplitudes = amplitude * np.ones(2 * self.n_body_joints + self.n_legs_joints)
+
+    def set_gradient_amplitude(self, parameters):
+        """Set gradient amplitudes"""
+        gradient = parameters.amplitude_gradient
+        self.amplitude_gradient = gradient / self.n_body_joints
 

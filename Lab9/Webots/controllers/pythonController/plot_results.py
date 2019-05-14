@@ -2,6 +2,7 @@
 
 import os.path
 import numpy as np
+import math
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
@@ -74,28 +75,55 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main(plot=True):
-    """Main"""
+def plot9c(plot=True):
+    """Plot for exercise 9c"""
     # Load data
-    num_files = len([f for f in os.listdir('logs/9b/')])
-    for i in range(num_files):
-        with np.load('logs/9b/simulation_{}.npz'.format(i)) as data:
-            timestep = float(data["timestep"])
-            amplitude = data["amplitudes"]
-            phase_lag = data["phase_lag"]
-            link_data = data["links"][:, 0, :]
-            joints_data = data["joints"]
-        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    pathfile = 'logs/9c/'
+    num_files = len([f for f in os.listdir(pathfile)])
 
-        # Plot data
-        plt.figure("Positions{}".format(i))
-        plot_positions(times, link_data)
+    energy_plot = np.zeros((num_files-4, 2))
+
+    clean_val = 200
+
+    for i in range(num_files-4):
+        with np.load(pathfile + 'simulation_{}.npz'.format(i)) as data:
+            timestep = float(data["timestep"])
+            amplitude_gradient = data["amplitude_gradient"]
+            link_data = data["links"][:, 0, :]
+            torque = data["joints"][:, :, 3]
+            angular_vel = data["joints"][:, :, 1]
+        times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
+
+        speed = np.linalg.norm(link_data[clean_val:], axis=1)/times[clean_val:]
+
+        # Plot speed data
+        plt.figure("Speed vs Gradient amplitude")
+        plt.plot(times[clean_val:], speed, label='Gradient {}'.format(amplitude_gradient))
+        plt.legend()
+        plt.xlabel("Time [s]")
+        plt.ylabel("Mean speed [m/s]")
+        plt.grid(True)
+
+        energy_plot[i, 0] = amplitude_gradient
+        energy_plot[i, 1] = np.sum(np.sum(torque[:, :10]*angular_vel[:, :10]))
+
+    # Plot energy data
+    plt.figure("Energy vs Gradient amplitude")
+    plt.plot(energy_plot[:, 0], energy_plot[:, 1])
+    plt.xlabel("Gradient [-]")
+    plt.ylabel("Energy [J]")
+    plt.grid(True)
 
     # Show plots
     if plot:
         plt.show()
     else:
         save_figures()
+
+
+def main(plot=True):
+    """Main"""
+    plot9c()
 
 
 if __name__ == '__main__':

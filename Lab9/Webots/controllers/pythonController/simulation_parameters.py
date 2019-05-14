@@ -15,15 +15,17 @@ class SimulationParameters(dict):
         self.n_legs_joints = 4
         self.simulation_duration = 30
         self.phase_lag = None
-        self.amplitude_gradient = None
+        self.amplitude_gradient = 0.0
 
         self.coupling_weights = 10.0  # w_ij
-        self.body_phase_bias = 0.2*math.pi  # theta_ij
-        self.limb_phase_bias = math.pi
+        self.axialCPG_phase_bias = 2*math.pi/self.n_body_joints  # theta_ij
+        self.antiphase_bias = math.pi
 
         self.amplitudes_rate = 20.0  # a_i
         self.freqs = 5 # f_i
         self.nominal_amplitudes = 0.5  # R_i
+
+        self.smart = 0
 
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...

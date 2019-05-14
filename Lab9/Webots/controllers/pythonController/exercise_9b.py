@@ -16,13 +16,13 @@ def exercise_9b(world, timestep, reset):
         SimulationParameters(
             simulation_duration=5,
             drive=1,
-            nominal_amplitudes=nominal_amplitudes,
-            body_phase_bias=body_phase_bias,
+            nominal_amplitudes=test,
+            axialCPG_phase_bias=axialCPG_phase_bias,
             turn=1,
             # ...
         )
-        for nominal_amplitudes in np.linspace(0.1, 1, num=3)
-        for body_phase_bias in np.linspace(0.01*math.pi, 1*math.pi, num=3)
+        for test in np.linspace(0.1, 1, num=3)
+        for axialCPG_phase_bias in np.linspace(0.01*math.pi, 1*math.pi, num=3)
     ]
 
     # Grid search

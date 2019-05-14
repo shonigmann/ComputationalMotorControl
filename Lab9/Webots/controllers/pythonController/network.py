@@ -12,16 +12,30 @@ def network_ode(_time, state, parameters):
     returns derivative of state (phases and amplitudes)
 
     """
+    n_body_joints = parameters.n_body_joints
     phases = state[:parameters.n_oscillators]
     amplitudes = state[parameters.n_oscillators:2*parameters.n_oscillators]
 
     weights_size = parameters.coupling_weights[0].size
     d_phases = np.zeros(weights_size)
+    d_amplitudes = np.zeros(parameters.n_oscillators)
+
     for i in range(weights_size):
         d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
                                                            np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
 
-    d_amplitudes = parameters.amplitudes_rate * (parameters.nominal_amplitudes - amplitudes)
+    if parameters.amplitude_gradient:
+        for i in range(n_body_joints):
+            if parameters.smart:
+                d_amplitudes[i] = parameters.amplitudes_rate * (parameters.amplitude_gradient * (n_body_joints - i) - amplitudes[i])
+                d_amplitudes[i + n_body_joints] = parameters.amplitudes_rate * (
+                                parameters.amplitude_gradient * (n_body_joints - i) - amplitudes[i + n_body_joints])
+            else:
+                d_amplitudes[i] = parameters.amplitudes_rate * (parameters.amplitude_gradient * i - amplitudes[i])
+                d_amplitudes[i + n_body_joints] = parameters.amplitudes_rate * (
+                                parameters.amplitude_gradient * i - amplitudes[i + n_body_joints])
+    else:
+        d_amplitudes = parameters.amplitudes_rate * (parameters.nominal_amplitudes - amplitudes)
 
     return np.concatenate([d_phases, d_amplitudes])
 
