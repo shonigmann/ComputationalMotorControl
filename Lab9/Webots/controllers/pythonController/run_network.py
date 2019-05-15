@@ -21,7 +21,12 @@ def run_network(duration, update=False, drive=0):
         drive=drive,
         amplitude_gradient=None,
         phase_lag=None,
-        turn=None,
+        turn=1.0,
+        use_drive_saturation = 1,
+        shes_got_legs=1,
+        cR_body = [0.05, 0.16], #cR1, cR0
+        cR_limb = [0.131, 0.131], #cR1, cR0
+        amplitudes_rate = 40,
     )
     network = SalamanderNetwork(timestep, parameters)
     osc_left = np.arange(10)

@@ -77,4 +77,3 @@ class ExperimentLogger(object):
             network=self.network,
             **self.parameters
         )
-

@@ -9,7 +9,7 @@ from matplotlib.colors import LogNorm
 from cmc_robot import ExperimentLogger
 from save_figures import save_figures
 from parse_args import save_plots
-
+import os
 
 def plot_positions(times, link_data):
     """Plot positions"""
@@ -29,7 +29,69 @@ def plot_trajectory(link_data):
     plt.axis("equal")
     plt.grid(True)
 
+def plot_turn_trajectory():
+    """Plot positions"""
+    for file in os.listdir('logs/9d1'):
+        with np.load(os.path.join('logs/9d1/',file)) as data:
+            #amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]
+            turn = data["turn"]*2
+            link_data = data["links"][:, 0, :]
+        
+            # Plot data
+            plt.figure("Trajectory")
+            plt.plot(link_data[:, 0], link_data[:, 2], label="Drive Diff = %.2f" % turn)
+            plt.xlabel("x [m]")
+            plt.ylabel("z [m]")
+            plt.legend()
+            plt.axis("equal")
+            plt.grid(True)
 
+def plot_reverse_trajectory():
+    """Plot positions"""
+    for file in os.listdir('logs/9d2'):
+        with np.load(os.path.join('logs/9d2/',file)) as data:
+            #amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]
+            turn = data["turn"]*2
+            reverse = data["reverse"]
+            if(reverse!=0.0):
+                reversed = "Rev:"
+            else:
+                reversed = "Fwd:"
+                
+            link_data = data["links"][:, 0, :]
+        
+            # Plot data
+            plt.figure("Trajectory")
+            plt.plot(link_data[:, 0], link_data[:, 2], label=reversed+" ; Drive Diff = %.2f" % turn)
+            plt.xlabel("x [m]")
+            plt.ylabel("z [m]")
+            plt.legend()
+            plt.axis("equal")
+            plt.grid(True)
+            
+def plot_9f():
+    """Plot positions"""
+    for file in os.listdir('logs/9f'):
+        with np.load(os.path.join('logs/9f/',file)) as data:
+            #amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]        
+            # Plot data
+            n_links = len(data["links"][0,:,0])
+            joint_data = data["joints"]
+            timestep = float(data["timestep"])
+            
+            times = np.arange(0, timestep*np.shape(joint_data)[0], timestep)
+            
+            plt.figure("Trajectory")
+                        
+            for i in range(n_links):
+                plt.plot(times, joint_data[:, i,0]+i*np.pi, label = "x%d" % (i+1))
+            plt.xlabel("t [s]")
+            plt.ylabel("link phase [rad]")
+            plt.legend()
+            
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     """Plot result
 
@@ -73,6 +135,47 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     plt.ylabel(labels[1])
     cbar = plt.colorbar()
     cbar.set_label(labels[2])
+
+
+def main(plot=True, file=None):
+    """Main"""
+    # Load data
+    if file is None:
+#        for file in os.listdir('logs/9d1'):
+#            with np.load(os.path.join('logs/9d1/',file)) as data:
+#                timestep = float(data["timestep"])
+#                #amplitude = data["amplitudes"]
+#                #phase_lag = data["phase_lag"]
+#                link_data = data["links"][:, 0, :]
+#                joints_data = data["joints"]
+#                times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+#            
+#                # Plot data
+#                plt.figure("Positions")
+#                plot_positions(times, link_data)
+#            
+#                plt.figure("Trajectory")
+#                plot_trajectory(link_data)
+#                print(joints_data)
+        #plot_turn_trajectory()
+        #plot_reverse_trajectory()
+        plot_9f()
+    else:
+        with np.load(file) as data:
+            timestep = float(data["timestep"])
+            #amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]
+            link_data = data["links"][:, 0, :]
+            joints_data = data["joints"]
+            times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+        
+            # Plot data
+            plt.figure("Positions")
+            plot_positions(times, link_data)
+        
+            plt.figure("Trajectory")
+            plot_trajectory(link_data)
+            print(joints_data)
 
 
 def plot9c(plot=True):
@@ -124,11 +227,6 @@ def plot9c(plot=True):
         plt.show()
     else:
         save_figures()
-
-
-def main(plot=True):
-    """Main"""
-    plot9c()
 
 
 if __name__ == '__main__':
