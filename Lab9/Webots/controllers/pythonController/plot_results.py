@@ -1,6 +1,8 @@
 """Plot results"""
 
+import os.path
 import numpy as np
+import math
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
@@ -175,6 +177,50 @@ def main(plot=True, file=None):
             plot_trajectory(link_data)
             print(joints_data)
 
+
+def plot9c(plot=True):
+    """Plot for exercise 9c"""
+    # Load data
+    pathfile = 'logs/9c/head_gradient_only/'
+    num_files = len([f for f in os.listdir(pathfile)])
+
+    gradient = np.zeros(num_files)
+    energy_plot = np.zeros(num_files)
+
+    clean_val = 200
+
+    for i in range(num_files):
+        with np.load(pathfile + 'simulation_{}.npz'.format(i)) as data:
+            timestep = float(data["timestep"])
+            amplitude_gradient = data["amplitude_gradient"]
+            link_data = data["links"][:, 0, :]
+            angle = data["joints"][:, :, 0]
+            angular_vel = data["joints"][:, :, 1]
+            torque = data["joints"][:, :, 3]
+
+        times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
+        speed = np.linalg.norm(link_data[clean_val:], axis=1)/times[clean_val:]
+
+        # Plot speed data
+        plt.figure("Speed vs Gradient amplitude")
+        plt.plot(times[clean_val:], speed, label='Gradient {}'.format(amplitude_gradient))
+        plt.legend()
+        plt.xlabel("Time [s]")
+        plt.ylabel("Mean speed [m/s]")
+        plt.grid(True)
+
+        # Plot sum energy over a simulation
+        gradient[i] = amplitude_gradient
+        energy_plot[i] = np.sum(np.sum(np.abs(torque[:, :10]*angle[:, :10]), axis=1)*timestep)
+
+    if pathfile is ('logs/9c/head_gradient_only/' or 'logs/9c/tail_gradient_only/'):
+        # Plot energy data
+        plt.figure("Energy vs Gradient amplitude")
+        plt.plot(gradient, energy_plot)
+        plt.legend()
+        plt.xlabel("Gradient [-]")
+        plt.ylabel("Energy [J]")
+        plt.grid(True)
 
     # Show plots
     if plot:

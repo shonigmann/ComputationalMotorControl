@@ -67,6 +67,7 @@ class ExperimentLogger(object):
             np.diff(self.joints[:, :, 0], axis=0, prepend=0)
             / self.parameters["timestep"]
         )
+
         # Save
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         np.savez(
