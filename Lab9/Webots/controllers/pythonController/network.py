@@ -24,7 +24,7 @@ def network_ode(_time, state, parameters):
         d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
                                                            np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
 
-    if parameters.amplitude_gradient:
+    if parameters.is_amplitude_gradient:
         for i in range(n_body_joints):
             if parameters.smart:
                 d_amplitudes[i] = parameters.amplitudes_rate * (parameters.amplitude_gradient * (n_body_joints - i) - amplitudes[i])

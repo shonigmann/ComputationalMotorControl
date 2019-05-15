@@ -15,7 +15,6 @@ class SimulationParameters(dict):
         self.n_legs_joints = 4
         self.simulation_duration = 30
         self.phase_lag = None
-        self.amplitude_gradient = 0.0
 
         self.coupling_weights = 10.0  # w_ij
         self.axialCPG_phase_bias = 2*math.pi/self.n_body_joints  # theta_ij
@@ -25,6 +24,9 @@ class SimulationParameters(dict):
         self.freqs = 5 # f_i
         self.nominal_amplitudes = 0.5  # R_i
 
+        # Parameters for 9c
+        self.is_amplitude_gradient = 0
+        self.amplitude_gradient = 0.0
         self.smart = 0
 
         # Feel free to add more parameters (ex: MLR drive)
