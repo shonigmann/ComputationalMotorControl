@@ -70,11 +70,69 @@ def plot_reverse_trajectory():
             plt.legend()
             plt.axis("equal")
             plt.grid(True)
+
+
+def plot_9c(plot=True):
+    """Plot for exercise 9c"""
+    # Load data
+    pathfile = 'logs/9b/'
+    num_files = len([f for f in os.listdir(pathfile)])
+
+    gradient = np.zeros(num_files)
+    energy_plot = np.zeros((5, 3))
+
+    clean_val = 200
+
+    for i in range(num_files):
+        with np.load(pathfile + 'simulation_{}.npz'.format(i)) as data:
+            timestep = float(data["timestep"])
+            amplitude_gradient = data["amplitude_gradient"]
+            link_data = data["links"][:, 0, :]
+            angle = data["joints"][:, :, 0]
+            angular_vel = data["joints"][:, :, 1]
+            torque = data["joints"][:, :, 3]
+
+        times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
+        speed = np.linalg.norm(link_data[clean_val:], axis=1)/times[clean_val:]
+
+        # Plot speed data
+        plt.figure("Speed vs Gradient amplitude")
+        plt.plot(times[clean_val:], speed, label='Gradient {}'.format(amplitude_gradient))
+        plt.legend()
+        plt.xlabel("Time [s]")
+        plt.ylabel("Mean speed [m/s]")
+        plt.grid(True)
+
+        # Plot sum energy over a simulation
+        gradient[i] = amplitude_gradient
+        energy_plot[i] = np.sum(np.sum(np.abs(torque[:, :10]*angle[:, :10]), axis=1))
+
+    """if pathfile is ('logs/9c/head_gradient_only/' or 'logs/9c/tail_gradient_only/'):
+        # Plot energy data
+        plt.figure("Energy vs Gradient amplitude")
+        plt.plot(gradient, energy_plot)
+        plt.legend()
+        plt.xlabel("Gradient [-]")
+        plt.ylabel("Energy [J]")
+        plt.grid(True)"""
+
+    energy_plot[:, 0] = np.linspace(0, 5, num=5)
+    energy_plot[:, 1] = np.linspace(0, 5, num=5)
+    energy_plot[:, 2] = np.linspace(0, 5, num=5)
+
+    plot_2d(energy_plot, ['x', 'y'])
+
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()
+
             
 def plot_9f():
     """Plot positions"""
     for file in os.listdir('logs/9f'):
-        with np.load(os.path.join('logs/9f/',file)) as data:
+        with np.load(os.path.join('logs/9f/', file)) as data:
             #amplitude = data["amplitudes"]
             #phase_lag = data["phase_lag"]        
             # Plot data
@@ -87,10 +145,28 @@ def plot_9f():
             plt.figure("Trajectory")
                         
             for i in range(n_links):
-                plt.plot(times, joint_data[:, i,0]+i*np.pi, label = "x%d" % (i+1))
+                plt.plot(times, joint_data[:, i , 0]+i*np.pi, label = "x%d" % (i+1))
             plt.xlabel("t [s]")
             plt.ylabel("link phase [rad]")
             plt.legend()
+
+
+def plot_9g():
+    """Plot positions"""
+    pathfile = 'logs/9g/'
+
+    for file in os.listdir(pathfile):
+        with np.load(pathfile + file) as data:
+            links = data["links"][:, 0, :]
+            joint_data = data["joints"]
+            timestep = float(data["timestep"])
+
+            times = np.arange(0, timestep * np.shape(joint_data)[0], timestep)
+
+            plt.figure("Trajectory")
+            plot_positions(times, link_data=links)
+            plt.show()
+
             
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     """Plot result
@@ -178,57 +254,7 @@ def main(plot=True, file=None):
             print(joints_data)
 
 
-def plot9c(plot=True):
-    """Plot for exercise 9c"""
-    # Load data
-    pathfile = 'logs/9c/head_gradient_only/'
-    num_files = len([f for f in os.listdir(pathfile)])
-
-    gradient = np.zeros(num_files)
-    energy_plot = np.zeros(num_files)
-
-    clean_val = 200
-
-    for i in range(num_files):
-        with np.load(pathfile + 'simulation_{}.npz'.format(i)) as data:
-            timestep = float(data["timestep"])
-            amplitude_gradient = data["amplitude_gradient"]
-            link_data = data["links"][:, 0, :]
-            angle = data["joints"][:, :, 0]
-            angular_vel = data["joints"][:, :, 1]
-            torque = data["joints"][:, :, 3]
-
-        times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
-        speed = np.linalg.norm(link_data[clean_val:], axis=1)/times[clean_val:]
-
-        # Plot speed data
-        plt.figure("Speed vs Gradient amplitude")
-        plt.plot(times[clean_val:], speed, label='Gradient {}'.format(amplitude_gradient))
-        plt.legend()
-        plt.xlabel("Time [s]")
-        plt.ylabel("Mean speed [m/s]")
-        plt.grid(True)
-
-        # Plot sum energy over a simulation
-        gradient[i] = amplitude_gradient
-        energy_plot[i] = np.sum(np.sum(np.abs(torque[:, :10]*angle[:, :10]), axis=1)*timestep)
-
-    if pathfile is ('logs/9c/head_gradient_only/' or 'logs/9c/tail_gradient_only/'):
-        # Plot energy data
-        plt.figure("Energy vs Gradient amplitude")
-        plt.plot(gradient, energy_plot)
-        plt.legend()
-        plt.xlabel("Gradient [-]")
-        plt.ylabel("Energy [J]")
-        plt.grid(True)
-
-    # Show plots
-    if plot:
-        plt.show()
-    else:
-        save_figures()
-
-
 if __name__ == '__main__':
-    main(plot=not save_plots())
+    #main(plot=not save_plots())
+    plot_9c()
 

@@ -14,7 +14,7 @@ def exercise_9c(world, timestep, reset):
             simulation_duration=10,
             drive=1,
             nominal_amplitude=0.0,
-            is_amplitude_gradient=1,
+            is_amplitude_gradient=0,
             amplitude_gradient=rhead - rtail,
             rhead=rhead,
             rtail=rtail,

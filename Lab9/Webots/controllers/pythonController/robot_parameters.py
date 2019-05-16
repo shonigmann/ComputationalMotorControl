@@ -33,24 +33,22 @@ class RobotParameters(dict):
         self.rates = np.zeros(self.n_oscillators)
         self.nominal_amplitudes = np.zeros(self.n_oscillators)
         
-        self.body_drive_left = 0.0
-        self.body_drive_right = 0.0
-        self.limb_drive_left = 0.0
-        self.limb_drive_right = 0.0
+        self.drive_left = 0.0
+        self.drive_right = 0.0
         
         self.v_sat = 0.0
         self.R_sat = 0.0
-        self.cv_body = [0,0]
-        self.cv_limb = [0,0]
-        self.cR_body = [0,0]
-        self.cR_limb = [0,0]
-        self.d_lim_body = [0,0]
-        self.d_lim_limb = [0,0]
+        self.cv_body = [0, 0]
+        self.cv_limb = [0, 0]
+        self.cR_body = [0, 0]
+        self.cR_limb = [0, 0]
+        self.d_lim_body = [0, 0]
+        self.d_lim_limb = [0, 0]
         
-        self.b = [0,0,0,0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
+        self.b = [0, 0, 0, 0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
         
         self.use_drive_saturation = 0
-        self.amplitude_gradient = 0.0
+        self.amplitude_gradient = None
 
         self.update(parameters)
 
@@ -65,6 +63,7 @@ class RobotParameters(dict):
         self.set_saturation_params(parameters) # dlow, dhigh, cv1, cv0, cR1, cR0, Rsat
         self.saturate_params()
         self.set_gradient_amplitude(parameters)
+        self.is_amplitude_gradient = parameters.is_amplitude_gradient
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
@@ -75,6 +74,7 @@ class RobotParameters(dict):
         """Set coupling weights"""
         weight = parameters.coupling_weights
         limb_weight = parameters.limb_body_weight
+
         for i in range(self.n_body_joints):
             if i != self.n_body_joints-1:
                 self.coupling_weights[i, i + 1] = weight
@@ -85,21 +85,19 @@ class RobotParameters(dict):
 
             self.coupling_weights[i, i + self.n_body_joints] = weight
             self.coupling_weights[i + self.n_body_joints, i] = weight
-            
-            #TODO: SET LEG->BODY COUPLING HERE
+
         for i in range(self.n_legs_joints):
             index = i+self.n_body_joints*2
             index_transverse = (index+1)%self.n_legs_joints + self.n_body_joints #adjacent index either fwd or bck from current
             index_saggital = (index+2)%self.n_legs_joints + self.n_body_joints #adjacent index either left or right of current
             
-            self.coupling_weights[index,index_transverse] = weight
-            self.coupling_weights[index,index_saggital] = weight
+            self.coupling_weights[index, index_transverse] = weight
+            self.coupling_weights[index, index_saggital] = weight
 
             #set weight from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
             for j in range(self.n_body_joints//2):
-                self.coupling_weights[index,i*self.n_body_joints//2+j] = limb_weight
-         
-        #print(self.coupling_weights)
+                self.coupling_weights[index, i * self.n_body_joints // 2 + j] = limb_weight
+
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
@@ -139,11 +137,10 @@ class RobotParameters(dict):
         self.nominal_amplitudes = amplitude * np.ones(2 * self.n_body_joints + self.n_legs_joints)
         self.nominal_amplitudes[2*self.n_body_joints:2*self.n_body_joints+self.n_legs_joints] = parameters.nominal_limb_amplitudes *np.ones(self.n_legs_joints)
 
+
     def set_drive_rates(self, parameters):
-        self.body_drive_left = parameters.body_drive_left
-        self.body_drive_right = parameters.body_drive_right
-        self.limb_drive_left = parameters.limb_drive_left
-        self.limb_drive_right = parameters.limb_drive_right
+        self.drive_left = parameters.drive_left
+        self.drive_right = parameters.drive_right
         
     def set_saturation_params(self, parameters):
         self.cv_body = parameters.cv_body #cv1, cv0
@@ -158,23 +155,23 @@ class RobotParameters(dict):
         
     def saturate_params(self):
         if self.use_drive_saturation != 0:
-            if self.body_drive_left <= self.d_lim_body[1] and self.body_drive_left > self.d_lim_body[0]:
-                leftfreqs = self.cv_body[0]*self.body_drive_left+self.cv_body[1]
-                leftAmps = self.cR_body[0]*self.body_drive_left + self.cR_body[1]
+            if self.d_lim_body[1] >= self.drive_left > self.d_lim_body[0]:
+                leftfreqs = self.cv_body[0]*self.drive_left+self.cv_body[1]
+                leftAmps = self.cR_body[0]*self.drive_left + self.cR_body[1]
             else:
                 leftfreqs = self.v_sat
                 leftAmps = self.R_sat
             
-            if self.body_drive_right <= self.d_lim_body[1] and self.body_drive_right > self.d_lim_body[0]:
-                rightfreqs = self.cv_body[0]*self.body_drive_right+self.cv_body[1]
-                rightAmps = self.cR_body[0]*self.body_drive_right + self.cR_body[1]
+            if self.d_lim_body[1] >= self.drive_right > self.d_lim_body[0]:
+                rightfreqs = self.cv_body[0]*self.drive_right+self.cv_body[1]
+                rightAmps = self.cR_body[0]*self.drive_right + self.cR_body[1]
             else:
                 rightfreqs = self.v_sat
                 rightAmps = self.R_sat
-            
-            if self.limb_drive_left <= self.d_lim_limb[1] and self.limb_drive_left > self.d_lim_limb[0]:
-                llfreqs = self.cv_limb[0]*self.limb_drive_left+self.cv_limb[1]
-                llAmps = self.cR_body[0]*self.limb_drive_left + self.cR_body[1]
+
+            if self.d_lim_limb[1] >= self.drive_left > self.d_lim_limb[0]:
+                llfreqs = self.cv_limb[0]*self.drive_left+self.cv_limb[1]
+                llAmps = self.cR_limb[0]*self.drive_left + self.cR_limb[1]
                 self.b[0] = 0.0
                 self.b[1] = 0.0
             else:
@@ -182,10 +179,10 @@ class RobotParameters(dict):
                 llAmps = self.R_sat
                 self.b[0] = 10.0
                 self.b[1] = 10.0
-                
-            if self.limb_drive_right <= self.d_lim_body[1] and self.limb_drive_right > self.d_lim_body[0]:
-                rlfreqs = self.cv_limb[0]*self.limb_drive_right+self.cv_limb[1]
-                rlAmps = self.cR_body[0]*self.limb_drive_right + self.cR_body[1]
+
+            if self.d_lim_limb[1] >= self.drive_right > self.d_lim_limb[0]:
+                rlfreqs = self.cv_limb[0]*self.drive_right+self.cv_limb[1]
+                rlAmps = self.cR_limb[0]*self.drive_right + self.cR_limb[1]
                 self.b[3] = 0.0
                 self.b[2] = 0.0
             else:
@@ -194,9 +191,16 @@ class RobotParameters(dict):
                 self.b[2] = 10.0
                 self.b[3] = 10.0
                 
-            #note: Figure 1 lists the leg order as FL, FR, BL, BR which goes against the F->B, then L->R that was used in the spine. The spine notation will be used here for now
-            self.freqs = np.concatenate([leftfreqs*np.ones(self.n_body_joints), rightfreqs*np.ones(self.n_body_joints), llfreqs*np.ones(self.n_legs_joints//2), rlfreqs*np.ones(self.n_legs_joints//2)])
-            self.nominal_amplitudes = np.concatenate([leftAmps*np.ones(self.n_body_joints), rightAmps*np.ones(self.n_body_joints), llAmps*np.ones(self.n_legs_joints//2), rlAmps*np.ones(self.n_legs_joints//2)])
+            # note: Figure 1 lists the leg order as FL, FR, BL, BR which goes against the F->B, then L->R that was used
+            # in the spine. The spine notation will be used here for now
+            self.freqs = np.concatenate([leftfreqs*np.ones(self.n_body_joints), rightfreqs*np.ones(self.n_body_joints),
+                                         llfreqs*np.ones(self.n_legs_joints//2), rlfreqs*np.ones(self.n_legs_joints//2)])
+
+            self.nominal_amplitudes = np.concatenate([leftAmps*np.ones(self.n_body_joints),
+                                                      rightAmps*np.ones(self.n_body_joints),
+                                                      llAmps*np.ones(self.n_legs_joints//2),
+                                                      rlAmps*np.ones(self.n_legs_joints//2)])
+
 
     def set_gradient_amplitude(self, parameters):
         """Set gradient amplitudes"""

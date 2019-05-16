@@ -27,13 +27,11 @@ class SimulationParameters(dict):
         self.nominal_limb_amplitudes = 0.0 # R_i for limbs
 
         # Parameters for 9d
-        self.body_drive_left = 2.0
-        self.body_drive_right = 2.0
-        self.limb_drive_left = 2.0
-        self.limb_drive_right = 2.0
+        self.drive_left = 2.0
+        self.drive_right = 2.0
 
-        self.cv_body = [0.4, 0.6]#[0.2, 0.3] #cv1, cv0
-        self.cv_limb = [0.0, 0.0]#[0.2, 0.0] #cv1, cv0
+        self.cv_body = [0.2, 0.3] #cv1, cv0
+        self.cv_limb = [0.2, 0.0] #cv1, cv0
         self.cR_body = [0.065, 0.196] #cR1, cR0
         self.cR_limb = [0.131, 0.131] #cR1, cR0
         
@@ -50,7 +48,7 @@ class SimulationParameters(dict):
         self.shes_got_legs = 0
 
         # Parameters for 9c
-        self.is_amplitude_gradient = 0
+        self.is_amplitude_gradient = None
         self.amplitude_gradient = 0.0
         self.smart = 0
 
@@ -65,12 +63,9 @@ class SimulationParameters(dict):
             self.limb_phase_bias *= -1
             
         if self.turn != 0.0 and self.turn is not None: #set <0 for a right turn, >0 for a left turn. bounds should be [-2, 2] (or [-1, 1] for walking)
-            self.body_drive_left += self.turn
-            self.body_drive_right -= self.turn
-            self.limb_drive_right -= self.turn           
-            self.limb_drive_left += self.turn
+            self.drive_left += self.turn
+            self.drive_right -= self.turn
             
-        if self.shes_got_legs != 0:
-            self.cv_limb = [0.4, 0.0] #cv1, cv0
-            
+        #if self.shes_got_legs != 0:
+        #    self.cv_limb = [0.4, 0.0] #cv1, cv0
             

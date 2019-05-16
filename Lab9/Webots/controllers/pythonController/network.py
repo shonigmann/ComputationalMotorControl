@@ -25,12 +25,13 @@ def network_ode(_time, state, parameters):
     d_amplitudes = np.zeros(parameters.n_oscillators)
 
     for i in range(weights_size):
-        if(i<parameters.n_body_joints*2):
+        if i < n_body_joints * 2:
             d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
-                                                           np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
+                                                               np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
         else:
             d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
-                                                           np.sin(phases[:] - phases[i] - parameters.phase_bias[i])) + b[i-parameters.n_body_joints*2]*np.sin(phases[i]+np.pi)               
+                                                               np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))\
+                          + b[i-n_body_joints*2]*np.sin(phases[i]+np.pi)
 
     if parameters.is_amplitude_gradient:
         for i in range(n_body_joints):
@@ -47,19 +48,23 @@ def network_ode(_time, state, parameters):
 
     return np.concatenate([d_phases, d_amplitudes])
 
+
 def motor_output(phases, amplitudes):
     """Motor output"""
+    epsilon = 0.05
     nb_body_joints = 10
     nb_legs_joints = 4
     q = np.zeros(nb_body_joints + nb_legs_joints)
 
     for i in range(nb_body_joints):
-        q[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i+10] * (1 + np.cos(phases[i + 10]))
+        q[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i+nb_body_joints] * (1 + np.cos(phases[i + nb_body_joints]))
 
     for i in range(nb_legs_joints):
-        if amplitudes[i + 2 * nb_body_joints] == 0:
+        if abs(amplitudes[i + 2 * nb_body_joints]) < epsilon:
+            print("Swimming")
             q[i + nb_body_joints] = 0
         else:
+            print("Walking")
             q[i + nb_body_joints] = -phases[i + 2 * nb_body_joints]
 
     return q

@@ -14,15 +14,15 @@ def exercise_9b(world, timestep, reset):
     n_joints = 10
     parameter_set = [
         SimulationParameters(
-            simulation_duration=5,
+            simulation_duration=10,
             drive=1,
-            nominal_amplitudes=test,
-            axialCPG_phase_bias=axialCPG_phase_bias,
-            turn=1,
+            amplitudes=test,
+            phase_lag=np.ones(n_joints) * test2,
+            turn=0,
             # ...
         )
-        for test in np.linspace(0.1, 1, num=3)
-        for axialCPG_phase_bias in np.linspace(0.01*math.pi, 1*math.pi, num=3)
+        for test in np.linspace(0.5, 1.3, num=1)
+        for test2 in np.linspace(0.25, 0.5, num=1)
     ]
 
     # Grid search
