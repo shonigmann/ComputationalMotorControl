@@ -44,8 +44,8 @@ def exercise_9d2(world, timestep, reset):
             reverse = reverse,
             turn = turn,
             shes_got_legs = 1,
-            limb_drive_left = 10.0,
-            limb_drive_right = 10.0,
+            limb_drive_left = 4.0,
+            limb_drive_right = 4.0,
             # ...
         )
         for turn in np.linspace(-.2,.2, 3)            

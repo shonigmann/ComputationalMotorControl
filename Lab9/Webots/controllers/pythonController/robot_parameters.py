@@ -174,7 +174,7 @@ class RobotParameters(dict):
             
             if self.limb_drive_left <= self.d_lim_limb[1] and self.limb_drive_left > self.d_lim_limb[0]:
                 llfreqs = self.cv_limb[0]*self.limb_drive_left+self.cv_limb[1]
-                llAmps = self.cR_body[0]*self.limb_drive_left + self.cR_body[1]
+                llAmps = self.cR_limb[0]*self.limb_drive_left + self.cR_limb[1]
                 self.b[0] = 0.0
                 self.b[1] = 0.0
             else:
@@ -183,9 +183,9 @@ class RobotParameters(dict):
                 self.b[0] = 10.0
                 self.b[1] = 10.0
                 
-            if self.limb_drive_right <= self.d_lim_body[1] and self.limb_drive_right > self.d_lim_body[0]:
+            if self.limb_drive_right <= self.d_lim_limb[1] and self.limb_drive_right > self.d_lim_limb[0]:
                 rlfreqs = self.cv_limb[0]*self.limb_drive_right+self.cv_limb[1]
-                rlAmps = self.cR_body[0]*self.limb_drive_right + self.cR_body[1]
+                rlAmps = self.cR_limb[0]*self.limb_drive_right + self.cR_limb[1]
                 self.b[3] = 0.0
                 self.b[2] = 0.0
             else:

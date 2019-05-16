@@ -15,9 +15,9 @@ def exercise_9f(world, timestep, reset):
             simulation_duration=10,
             use_drive_saturation=1,
             shes_got_legs=1,
-            cR_body = [0.05, 0.16], #cR1, cR0
-            cR_limb = [0.131, 0.131], #cR1, cR0
-            amplitudes_rate = 40,
+            #cR_body = [0.05, 0.16], #cR1, cR0
+            #cR_limb = [0.131, 0.131], #cR1, cR0
+            #amplitudes_rate = 40,
             body_drive_left = 2.0,
             body_drive_right = 2.0,
             limb_drive_left = 2.0,

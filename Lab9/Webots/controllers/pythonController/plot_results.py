@@ -77,15 +77,21 @@ def plot_9f():
             #phase_lag = data["phase_lag"]        
             # Plot data
             n_links = len(data["links"][0,:,0])
+            n_joints = len(data["joints"][0,:,0])
             joint_data = data["joints"]
+            #position_data= data["positions"]
             timestep = float(data["timestep"])
             
-            times = np.arange(0, timestep*np.shape(joint_data)[0], timestep)
+            times = np.arange(0, timestep*np.shape(joint_data[1000:2500])[0], timestep)
             
             plt.figure("Trajectory")
                         
-            for i in range(n_links):
-                plt.plot(times, joint_data[:, i,0]+i*np.pi, label = "x%d" % (i+1))
+            for i in range(10):
+                if i<5:
+                    color="blue"
+                else:
+                    color="red"
+                plt.plot(times, joint_data[1000:2500, i,0]+i*np.pi, label = "x%d" % (i+1))
             plt.xlabel("t [s]")
             plt.ylabel("link phase [rad]")
             plt.legend()

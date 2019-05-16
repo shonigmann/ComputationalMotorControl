@@ -32,8 +32,11 @@ class SimulationParameters(dict):
         self.limb_drive_left = 2.0
         self.limb_drive_right = 2.0
 
-        self.cv_body = [0.4, 0.6]#[0.2, 0.3] #cv1, cv0
-        self.cv_limb = [0.0, 0.0]#[0.2, 0.0] #cv1, cv0
+        self.cv_body = [0.2, 0.3] #cv1, cv0
+        self.cv_limb = [0.2, 0.0] #cv1, cv0
+        # self.cv_body = [0.4, 0.6]#[0.2, 0.3] #cv1, cv0
+        #self.cv_limb = [0.0, 0.0]#[0.2, 0.0] #cv1, cv0
+        
         self.cR_body = [0.065, 0.196] #cR1, cR0
         self.cR_limb = [0.131, 0.131] #cR1, cR0
         

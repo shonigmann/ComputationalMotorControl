@@ -44,9 +44,12 @@ def motor_output(phases, amplitudes):
 
     for i in range(nb_legs_joints):
         if amplitudes[i + 2 * nb_body_joints] == 0:
+            print('setting to 0')
             q[i + nb_body_joints] = 0
         else:
             q[i + nb_body_joints] = -phases[i + 2 * nb_body_joints]
+            
+        print('Leg %d: q= %.2f', i, q[i+nb_body_joints])
 
     return q
 
