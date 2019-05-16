@@ -15,7 +15,6 @@ class SimulationParameters(dict):
         self.n_legs_joints = 4
         self.simulation_duration = 30
         self.phase_lag = None
-        self.amplitude_gradient = None
 
         self.coupling_weights = 10.0  # w_ij
         self.limb_body_weight = 30.0 #weight from limb to body
@@ -27,6 +26,7 @@ class SimulationParameters(dict):
         self.nominal_amplitudes = 0.5  # R_i for body
         self.nominal_limb_amplitudes = 0.0 # R_i for limbs
 
+        # Parameters for 9d
         self.body_drive_left = 2.0
         self.body_drive_right = 2.0
         self.limb_drive_left = 2.0
@@ -51,7 +51,12 @@ class SimulationParameters(dict):
         self.turn = 0.0
         self.reverse = 0
         self.shes_got_legs = 0
-        
+
+        # Parameters for 9c
+        self.is_amplitude_gradient = 0
+        self.amplitude_gradient = 0.0
+        self.smart = 0
+
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...

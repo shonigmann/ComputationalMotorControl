@@ -15,3 +15,6 @@ __pychache__
 
 #: pycharm
 *.idea
+
+# simulation results
+Lab9/Webots/controllers/pythonController/logs/

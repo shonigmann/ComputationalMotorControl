@@ -14,6 +14,9 @@ class RobotParameters(dict):
     def __init__(self, parameters):
         super(RobotParameters, self).__init__()
 
+        # Initialize some flags
+        self.smart = parameters.smart
+
         # Initialise parameters
         self.n_body_joints = parameters.n_body_joints
         self.n_legs_joints = parameters.n_legs_joints
@@ -47,7 +50,8 @@ class RobotParameters(dict):
         self.b = [0,0,0,0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
         
         self.use_drive_saturation = 0
-        
+        self.amplitude_gradient = 0.0
+
         self.update(parameters)
 
     def update(self, parameters):
@@ -60,6 +64,7 @@ class RobotParameters(dict):
         self.set_drive_rates(parameters) # d
         self.set_saturation_params(parameters) # dlow, dhigh, cv1, cv0, cR1, cR0, Rsat
         self.saturate_params()
+        self.set_gradient_amplitude(parameters)
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
@@ -100,34 +105,29 @@ class RobotParameters(dict):
         """Set phase bias"""
         body_bias = parameters.body_phase_bias
         limb_bias = parameters.limb_phase_bias
-        print(limb_bias)
+
         for i in range(self.n_body_joints):
-            if i != self.n_body_joints-1:
+            if i != self.n_body_joints - 1:
                 self.phase_bias[i, i + 1] = -body_bias
                 self.phase_bias[i + self.n_body_joints, i + self.n_body_joints + 1] = -body_bias
 
                 self.phase_bias[i + 1, i] = body_bias
                 self.phase_bias[i + self.n_body_joints + 1, i + self.n_body_joints] = body_bias
-            
+
             self.phase_bias[i, i + self.n_body_joints] = limb_bias
             self.phase_bias[i + self.n_body_joints, i] = limb_bias
-            
+
         for i in range(self.n_legs_joints):
-            index = i+self.n_body_joints*2
-            index_transverse = (index+1)%self.n_legs_joints + self.n_body_joints #adjacent index either fwd or bck from current
-            index_saggital = (index+2)%self.n_legs_joints + self.n_body_joints #adjacent index either left or right of current
-            
-            self.phase_bias[index,index_transverse] = limb_bias
-            self.phase_bias[index,index_saggital] = limb_bias
-            
-            #set bias from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
-            for j in range(self.n_body_joints//2):
-                self.phase_bias[index,i*self.n_body_joints//2+j] = limb_bias
-         
-        #print(self.phase_bias)
-                
-                
-        #print(self.phase_bias[2*self.n_body_joints:(2*self.n_body_joints+self.n_legs_joints),2*self.n_body_joints:(2*self.n_body_joints+self.n_legs_joints)])
+            index = i + self.n_body_joints * 2
+            index_transverse = (index + 1) % self.n_legs_joints + self.n_body_joints  # adjacent index either fwd or bck from current
+            index_saggital = (index + 2) % self.n_legs_joints + self.n_body_joints  # adjacent index either left or right of current
+
+            self.phase_bias[index, index_transverse] = limb_bias
+            self.phase_bias[index, index_saggital] = limb_bias
+
+            # set bias from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
+            for j in range(self.n_body_joints // 2):
+                self.phase_bias[index, i * self.n_body_joints // 2 + j] = limb_bias
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
@@ -197,3 +197,8 @@ class RobotParameters(dict):
             #note: Figure 1 lists the leg order as FL, FR, BL, BR which goes against the F->B, then L->R that was used in the spine. The spine notation will be used here for now
             self.freqs = np.concatenate([leftfreqs*np.ones(self.n_body_joints), rightfreqs*np.ones(self.n_body_joints), llfreqs*np.ones(self.n_legs_joints//2), rlfreqs*np.ones(self.n_legs_joints//2)])
             self.nominal_amplitudes = np.concatenate([leftAmps*np.ones(self.n_body_joints), rightAmps*np.ones(self.n_body_joints), llAmps*np.ones(self.n_legs_joints//2), rlAmps*np.ones(self.n_legs_joints//2)])
+
+    def set_gradient_amplitude(self, parameters):
+        """Set gradient amplitudes"""
+        gradient = parameters.amplitude_gradient
+        self.amplitude_gradient = gradient / self.n_body_joints
