@@ -24,8 +24,8 @@ def exercise_9b(world, timestep, reset):
            # print(phase_lag[1])
             # ...
         )
-        for test in np.linspace(0.5, 1.3, num=4)
-            for test2 in np.linspace(0.25, 0.5, num=4)
+        for test in np.linspace(0.5, 1.3, num=1)
+            for test2 in np.linspace(0.25, 0.5, num=1)
         #for test2 in np.linspace(0.01*math.pi, 1*math.pi, num=3)
     ]
 
@@ -41,7 +41,103 @@ def exercise_9b(world, timestep, reset):
             parameters,
             timestep,
             int(1000 * parameters.simulation_duration / timestep),
-            logs="./logs/9b/simulation_{}.npz".format(simulation_i)
+            logs="./logs/9b/test_{}.npz".format(simulation_i)
         )
+        
+        #CALCULATE ENERGY:
+        
+        #Load the files in order to read the data of each iteration and compute
+        #the energy or speed. (IMP: right now 250 iters=1 seg): in order to know
+        #how much to take out until salamander swims correctly. 
+        file = np.load("./logs/9b/test_{}.npz".format(simulation_i))
+        print(np.shape(file['joints']))
+        print(len(file['joints'][0])) #10
+        print(len(file['joints'][1])) #10
+        print(len(file['joints'][:])) #750
+        print(len(file['joints'][:,0,0])) #750
+        
+        #Go over every joint and compute the product: Torque*Angle
+        
+        Energy_joint = 0  #initialize the energy for every joint to 0 value.
+        Energy_animal = 0  #initialize the energy of the whole animal to 0. 
+        
+        # ['joints'][1] goes through all 10 joints. 
+        for i_joint in range(len(file['joints'][0,:,0])):
+            
+            print('i_joint: ', i_joint)
+            #print(len(file['joints'][1][0:5]))
+            #print(file['joints'][1][0:5])
+            
+             
+            
+            # ['joints'][0] goes through all iterations, i.e. 10seg = 2500 iters
+            for i_iter,nothing2 in enumerate(file['joints'][:,0,0]):    
+                #print('i_iter: ', i_iter)
+                #assign the torque value of the iteration
+                torque = file['joints'][i_iter, i_joint, 3]   
+                #print(torque)
+                #assign the increment of the angle displaced (it+1) - (it)
+                d_angle = file['joints'][i_iter+1, i_joint, 0] - file['joints'][i_iter, i_joint, 0]  
+                
+                #compute value of energy for every iteration, i.e. d_phi
+                Energy_iter = abs(torque * d_angle)
+                #append by summing to the previous value. Energy of joint for all iters 
+                Energy_joint = Energy_joint + Energy_iter   
+                #when the i_iter is one before the last: BREAK. Due to d_angle
+                
+                if i_iter+2 == len(file['joints'][:,0,0]):
+                    print('Energy of the joint: ',Energy_joint)
+                    break
 
-    plot_results.main()
+            Energy_animal = Energy_animal + Energy_joint
+            print(Energy_animal)
+    print('this is the energy of the animal: ', Energy_animal)
+    print(Energy_animal)
+        
+#NOTES OF WORK TO DO: 
+#I should break before the last iter!!
+#I should save the energy value somewhere to do a 2D plot after. Idea is: 2D for every set of phase lag and oscillation amplitude. 
+
+
+#ID_J = {
+#    "position": 0,
+#    "velocity": 1,
+#    "cmd": 2,
+#    "torque": 3,
+#    "torque_fb": 4,   --> WHAT IS TORQUE_FB?? 
+#    "output": 5
+#}
+            
+#        print(np.shape(file['joints']))   #(2500 iters en 10 seg,       10 joints    , 6 ID_J)
+#        print('inic check')
+#        #print(len(file['joints'][0]))
+#        #print(file['joints'][:,3,0])
+#        print('end check')
+#        
+#        #plot_results.main_9b()
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

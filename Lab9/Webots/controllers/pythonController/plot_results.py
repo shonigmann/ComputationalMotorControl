@@ -73,31 +73,9 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main(plot=True):
+def main_9b(plot=True):
     """Main"""
     # Load data
-    
-#    while e =! 16: 
-#        with np.load('logs/9b/simulation_1.npz') as data:
-#            timestep = float(data["timestep"])
-#            amplitude = data["amplitudes"]
-#            phase_lag = data["phase_lag"]
-#            link_data = data["links"][:, 0, :]
-#            joints_data = data["joints"]
-#        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
-#
-#        # Plot data
-#        plt.figure("Positions")
-#        plot_positions(times, link_data)
-#    
-#        print(joints_data)
-#
-#        # Show plots
-#        if plot:
-#            plt.show()
-#        else:
-#            save_figures()
-
     with np.load('logs/9b/simulation_1.npz') as data:
         timestep = float(data["timestep"])
         amplitude = data["amplitudes"]
@@ -117,7 +95,40 @@ def main(plot=True):
         plt.show()
     else:
             save_figures()
+            
+def main_9bEnergy(plot=True):
+    """Main"""
+    # Load data
+    with np.load('logs/9b/simulation_1.npz') as data:
+        timestep = float(data["timestep"])
+        amplitude = data["amplitudes"]
+        phase_lag = data["phase_lag"]
+        link_data = data["links"][:, 0, :]
+        joints_data = data["joints"]
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    
+    #CALCULATE ENERGY
+    torque_vector = joints_data[0:-2 , : , 3]
+    d_angle = joints_data[ 1:-1 , : , 0] - joints_data[ 0:-2 , : , 0]
+    
+    print(np.shape(torque_vector))
+    print('Angle: ', np.shape(d_angle))
+    
+    Energy_joints = np.dot(torque_vector, d_angle)
+    print(np.shape(Energy_joints))
+    # Plot data
+    plt.figure("Positions")
+    plot_positions(times, link_data)
+
+    print(joints_data)
+
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+            save_figures()
 
 if __name__ == '__main__':
-    main(plot=not save_plots())
+    #main(plot=not save_plots())
+    main_9bEnergy()
 
