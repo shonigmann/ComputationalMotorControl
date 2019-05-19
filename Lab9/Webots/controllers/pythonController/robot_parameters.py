@@ -49,6 +49,8 @@ class RobotParameters(dict):
         
         self.use_drive_saturation = 0
         self.amplitude_gradient = None
+        
+        self.enable_transitions = parameters.enable_transitions
 
         self.update(parameters)
 

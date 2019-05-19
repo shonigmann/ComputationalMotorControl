@@ -52,6 +52,8 @@ class SimulationParameters(dict):
         self.amplitude_gradient = 0.0
         self.smart = 0
 
+        self.enable_transitions = False
+        
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...

@@ -18,8 +18,8 @@ def exercise_9f(world, timestep, reset):
             cR_body = [0.05, 0.16], #cR1, cR0
             cR_limb = [0.131, 0.131], #cR1, cR0
             amplitudes_rate = 40,
-            drive_left = 2.0,
-            drive_right = 2.0,
+            drive_left = 2.99,
+            drive_right = 2.99,
             # ...
         )
         #for turn in np.linspace(-.2,.2, 7)

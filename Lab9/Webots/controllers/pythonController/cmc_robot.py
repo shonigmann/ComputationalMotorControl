@@ -145,17 +145,18 @@ class SalamanderCMC(object):
 
         pos = self.gps.getValues()
 
-        if self.X_LOW_POS < pos[0] < self.X_HIGH_POS:
-            self.network.parameters.drive_left = 2.0 + 4 * (pos[0] - 0.25)
-            self.network.parameters.drive_right = 2.0 + 4 * (pos[0] - 0.25)
-        elif pos[0] > self.X_HIGH_POS:
-            self.network.parameters.drive_left = 4.0
-            self.network.parameters.drive_right = 4.0
-        else:
-            self.network.parameters.drive_left = 2.0
-            self.network.parameters.drive_right = 2.0
-
-        print(self.network.parameters.drive_right)
-
-        self.network.parameters.set_saturation_params(self.network.parameters)
-        self.network.parameters.saturate_params()
+        if self.network.parameters.enable_transitions == True:
+            if self.X_LOW_POS < pos[0] < self.X_HIGH_POS:
+                self.network.parameters.drive_left = 2.0 + 4 * (pos[0] - 0.25)
+                self.network.parameters.drive_right = 2.0 + 4 * (pos[0] - 0.25)
+            elif pos[0] > self.X_HIGH_POS:
+                self.network.parameters.drive_left = 4.0
+                self.network.parameters.drive_right = 4.0
+            else:
+                self.network.parameters.drive_left = 2.0
+                self.network.parameters.drive_right = 2.0
+    
+            print(self.network.parameters.drive_right)
+    
+            self.network.parameters.set_saturation_params(self.network.parameters)
+            self.network.parameters.saturate_params()

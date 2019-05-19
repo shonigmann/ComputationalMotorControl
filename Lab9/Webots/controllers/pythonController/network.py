@@ -61,7 +61,7 @@ def motor_output(phases, amplitudes):
 
     for i in range(nb_legs_joints):
         if abs(amplitudes[i + 2 * nb_body_joints]) < epsilon:
-            print("Swimming")
+            #print("Swimming")
             q[i + nb_body_joints] = 0
         else:
             print("Walking")

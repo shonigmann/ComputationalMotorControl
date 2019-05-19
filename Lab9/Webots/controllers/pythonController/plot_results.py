@@ -29,26 +29,86 @@ def plot_trajectory(link_data):
     plt.axis("equal")
     plt.grid(True)
 
-def plot_turn_trajectory():
-    """Plot positions"""
+def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot=0):
+    # Plot spine angles
+    
+    #cut out transient
+    joint_data = joint_data[1000:-1, :]
+    
+    times = np.arange(0, timestep*np.shape(joint_data)[0], timestep)
+    
+    plt.figure("Spine Angles "+plot_name)
+    if subplot>0:
+        plt.subplot(2,1,subplot)
+    L_link = .1 #link length in cm
+    x_spacing = .5
+    index_step = np.shape(joint_data)[0]//num_iter
+    
+    #plot spine from fixed head position
+    for i in range(num_iter):
+        index = i*index_step
+        x_offset = i*x_spacing
+        joint_state = joint_data[index,0:10]
+        
+        spine_x = np.zeros([len(joint_state)+1,1]) + x_offset
+        spine_y = np.zeros([len(joint_state)+1,1])
+        for j in range(10):
+            spine_x[j+1] = spine_x[j]+L_link*np.sin(joint_state[j])
+            spine_y[j+1] = spine_y[j]-L_link*np.cos(joint_state[j])
+        
+        plt.plot(spine_x,spine_y, label="t = %.1f" % times[index])
+        plt.plot(spine_x[0]*np.ones([2,1]), [spine_y[0],spine_y[-1]], color='r', linestyle='--')
+        
+  
+    plt.title("Spine Angles ("+turn_rev+")")
+    plt.xlabel("x [m]")
+    plt.ylabel("z [m]")
+    plt.legend()
+    plt.axis("equal")
+    plt.grid(True)
+
+def plot9d():
+    plot9d1()
+    plot9d2()
+
+def plot9d1():
+    #load files in folder
+    file_number = 1
     for file in os.listdir('logs/9d1'):
         with np.load(os.path.join('logs/9d1/',file)) as data:
             #amplitude = data["amplitudes"]
             #phase_lag = data["phase_lag"]
             turn = data["turn"]*2
             link_data = data["links"][:, 0, :]
+            joint_data = data["joints"][:,:,0]
         
-            # Plot data
-            plt.figure("Trajectory")
+            # Plot trajectory
+            plt.figure("9d1: Trajectory")
             plt.plot(link_data[:, 0], link_data[:, 2], label="Drive Diff = %.2f" % turn)
             plt.xlabel("x [m]")
             plt.ylabel("z [m]")
             plt.legend()
             plt.axis("equal")
             plt.grid(True)
+            
+            # Plot spine angles
+            #only plot 1 time per direction...   
+            if file_number == 1:
+                timestep = float(data["timestep"])
+                turn_rev="Drive Diff = %.2f" % turn
+                plot_spine(timestep, joint_data, turn_rev, 8, "d1", 1)
+            if file_number == len(os.listdir('logs/9d1')):
+                timestep = float(data["timestep"])
+                turn_rev="Drive Diff = %.2f" % turn
+                plot_spine(timestep, joint_data, turn_rev, 8, "d1", 2)
+                
+            file_number = file_number + 1
 
-def plot_reverse_trajectory():
+
+def plot9d2():
     """Plot positions"""
+    epsilon = 0.0001
+    subplot = 1
     for file in os.listdir('logs/9d2'):
         with np.load(os.path.join('logs/9d2/',file)) as data:
             #amplitude = data["amplitudes"]
@@ -57,19 +117,29 @@ def plot_reverse_trajectory():
             reverse = data["reverse"]
             if(reverse!=0.0):
                 reversed = "Rev:"
+                rev_title = "Reverse"
             else:
                 reversed = "Fwd:"
+                rev_title = "Forward"
                 
             link_data = data["links"][:, 0, :]
+            joint_data = data["joints"][:,:,0]
         
             # Plot data
-            plt.figure("Trajectory")
-            plt.plot(link_data[:, 0], link_data[:, 2], label=reversed+" ; Drive Diff = %.2f" % turn)
+            plt.figure("9d2: Trajectory")
+            plt.plot(link_data[:, 0], link_data[:, 2], label=reversed+" Drive Diff = %.2f" % turn)
             plt.xlabel("x [m]")
             plt.ylabel("z [m]")
             plt.legend()
             plt.axis("equal")
             plt.grid(True)
+            
+            # Plot spine angles            
+            #only plot 1 time per direction...   
+            if abs(turn) < epsilon:
+                timestep = float(data["timestep"])
+                plot_spine(timestep, joint_data, rev_title, 8, "d2", subplot)
+                subplot = subplot+1
 
 
 def plot_9c(plot=True):
@@ -136,19 +206,38 @@ def plot_9f():
             #amplitude = data["amplitudes"]
             #phase_lag = data["phase_lag"]        
             # Plot data
-            n_links = len(data["links"][0,:,0])
+            n_joints = len(data["joints"][0,:,0])
             joint_data = data["joints"]
             timestep = float(data["timestep"])
             
-            times = np.arange(0, timestep*np.shape(joint_data)[0], timestep)
+            times = np.arange(0, timestep*np.shape(joint_data[1500:2500,:,:])[0], timestep)
             
-            plt.figure("Trajectory")
-                        
-            for i in range(n_links):
-                plt.plot(times, joint_data[:, i , 0]+i*np.pi, label = "x%d" % (i+1))
-            plt.xlabel("t [s]")
-            plt.ylabel("link phase [rad]")
-            plt.legend()
+            plt.figure("Phase Differences for: "+file)
+            for j in range(2):
+                for i in range((n_joints-4)//2):
+                    #plt.plot(times, joint_data[1500:2500, i , 0]+i*np.pi, label = "x%d" % (i+1))
+                    plt.subplot(2,1,j+1)
+                    if i>0: 
+                        plt.plot(times, joint_data[1500:2500, i+j*5 , 0]- joint_data[1500:2500,i+j*5-1,0], label = "x%d" % (i+j*5+1))
+                    else:
+                        plt.plot(times, joint_data[1500:2500, i+j*5 , 0]- joint_data[1500:2500,i+j*5,0], label = "x%d" % (i+j*5+1))
+                plt.xlabel("t [s]")
+                plt.ylabel("link phase lag [rad]")
+                plt.legend()
+                
+            plt.figure("Phase for: "+file)
+            for j in range(2):
+                for i in range((n_joints-4)//2):
+                    #plt.plot(times, joint_data[1500:2500, i , 0]+i*np.pi, label = "x%d" % (i+1))
+                    plt.subplot(2,1,j+1)
+                    if i>0: 
+                        plt.plot(times, joint_data[1500:2500, i+j*5 , 0], label = "x%d" % (i+j*5+1))
+                    else:
+                        plt.plot(times, joint_data[1500:2500, i+j*5 , 0], label = "x%d" % (i+j*5+1))
+                plt.xlabel("t [s]")
+                plt.ylabel("link phase [rad]")
+                plt.legend()
+                  
 
 
 def plot_9g():
@@ -235,7 +324,7 @@ def main(plot=True, file=None):
 #                print(joints_data)
         #plot_turn_trajectory()
         #plot_reverse_trajectory()
-        plot_9f()
+        plot9d()
     else:
         with np.load(file) as data:
             timestep = float(data["timestep"])
@@ -256,5 +345,5 @@ def main(plot=True, file=None):
 
 if __name__ == '__main__':
     #main(plot=not save_plots())
-    plot_9c()
+    main()
 
