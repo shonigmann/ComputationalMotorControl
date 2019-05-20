@@ -73,10 +73,10 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main_9b(plot=True):
+def main_9b(simulation_i, plot=True):
     """Main"""
     # Load data
-    with np.load('logs/9b/simulation_1.npz') as data:
+    with np.load('logs/9b/simulation_{}.npz'.format(simulation_i)) as data:
         timestep = float(data["timestep"])
         amplitude = data["amplitudes"]
         phase_lag = data["phase_lag"]
@@ -88,7 +88,7 @@ def main_9b(plot=True):
     plt.figure("Positions")
     plot_positions(times, link_data)
 
-    print(joints_data)
+    #print(joints_data)
 
     # Show plots
     if plot:
@@ -96,39 +96,52 @@ def main_9b(plot=True):
     else:
             save_figures()
             
-def main_9bEnergy(plot=True):
+def main_9bEnergy(simulation_i, Elements, Energy_matrix, plot=True):
     """Main"""
     # Load data
-    with np.load('logs/9b/simulation_1.npz') as data:
-        timestep = float(data["timestep"])
-        amplitude = data["amplitudes"]
-        phase_lag = data["phase_lag"]
-        link_data = data["links"][:, 0, :]
+    with np.load("logs/9b/test_{}.npz".format(simulation_i)) as data:
+#        timestep = float(data["timestep"])
+#        amplitude = data["amplitudes"]
+#        phase_lag = data["phase_lag"]
+#        link_data = data["links"][:, 0, :]
         joints_data = data["joints"]
-    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+#    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
     
     #CALCULATE ENERGY
-    torque_vector = joints_data[0:-2 , : , 3]
-    d_angle = joints_data[ 1:-1 , : , 0] - joints_data[ 0:-2 , : , 0]
+    torque_vector = joints_data[500:-2 , : , 3]
+    d_angle = joints_data[ 501:-1 , : , 0] - joints_data[ 500:-2 , : , 0]
     
-    print(np.shape(torque_vector))
-    print('Angle: ', np.shape(d_angle))
+    #print(np.shape(torque_vector))
+    #print('Angle: ', np.shape(d_angle))
     
-    Energy_joints = np.dot(torque_vector, d_angle)
-    print(np.shape(Energy_joints))
-    # Plot data
-    plt.figure("Positions")
-    plot_positions(times, link_data)
-
-    print(joints_data)
-
-    # Show plots
-    if plot:
-        plt.show()
-    else:
-            save_figures()
+    Energy_joints = np.dot(abs(np.transpose(torque_vector)), abs(d_angle))
+    #print(np.shape(Energy_joints))
+    Energy_animal = np.trace(Energy_joints)
+#    print('The energy of the animal ', simulation_i,' is: ', Energy_animal)
+#    print('Elements: ', Elements)
+    shape = np.shape(Energy_matrix)
+    Energy_matrix = np.reshape(Energy_matrix, (1, Elements))
+    Energy_matrix[0 , simulation_i] = Energy_animal
+#    print(Energy_matrix)
+    Energy_matrix = np.reshape(Energy_matrix, shape)
+    print(Energy_matrix)
+    np.savez('./logs/9b/Energies.npz', Energy=Energy_matrix)
+    
+    
+    
+#    # Plot data
+#    plt.figure("Positions")
+#    plot_positions(times, link_data)
+#
+#    #print(joints_data)
+#
+#    # Show plots
+#    if plot:
+#        plt.show()
+#    else:
+#            save_figures()
 
 if __name__ == '__main__':
     #main(plot=not save_plots())
     main_9bEnergy()
-
+    main_9b()

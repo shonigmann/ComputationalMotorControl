@@ -23,7 +23,9 @@ from simulation_parameters import SimulationParameters
 #}
 
 
-file = np.load("./logs/9b/simulation_{}.npz".format(simulation_i))
-print(np.shape(file['joints']))   #(2500 iters en 10 seg,       10 joints    , 6 ID_J)
-print(file['joints'][])
+#file = np.load("./logs/9b/simulation_{}.npz".format(simulation_i))
+file = np.load("./logs/9b/Energies.npz")
+print(np.shape(file['Amplitudes']), '  ', np.shape(file['PhaseLag'])  )   #(2500 iters en 10 seg,       10 joints    , 6 ID_J)
+print(file['Amplitudes'][0], '  ', file['PhaseLag'][2]  )
+#print(file['joints'][])
 # 2500 iteraciones para 10 seg
