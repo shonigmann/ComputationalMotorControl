@@ -33,11 +33,13 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
     # Plot spine angles
     
     #cut out transient
-    joint_data = joint_data[1000:-1, :]
+    num_points = np.shape(joint_data)[0]
+    if num_points > 500:
+        joint_data = joint_data[(num_points-500):-1,:]
     
     times = np.arange(0, timestep*np.shape(joint_data)[0], timestep)
     
-    plt.figure("Spine Angles "+plot_name)
+    plt.figure("Spine Frames "+plot_name)
     if subplot>0:
         plt.subplot(2,1,subplot)
     L_link = .1 #link length in cm
@@ -60,15 +62,80 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
         plt.plot(spine_x[0]*np.ones([2,1]), [spine_y[0],spine_y[-1]], color='r', linestyle='--')
         
   
-    plt.title("Spine Angles ("+turn_rev+")")
+    plt.title("Spine Angle Frames ("+turn_rev+")")
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.legend()
     plt.axis("equal")
     plt.grid(True)
-
+    
+    #integrate spine angle to uncover bias towards one side or another
+    #first find zero as starting point
+    integrated_angles = np.zeros([10,1])
+    period_indices = np.zeros([10,2])
+    
+    for i in range(10):
+        period_time = 0
+        zeros = (np.multiply(joint_data[0:-1,i],joint_data[1:,i])<0)
+        j=0
+        while zeros[j]!= 1 or joint_data[j,i]<0:
+            j+=1
+        zero_count = 0
+        period_time -= times[j]
+        period_indices[i,0] = j
+        #then integrate over one period
+        while zero_count <2:
+            integrated_angles[i] += joint_data[j,i]*360/2/np.pi*timestep #deg/s
+            j+=1
+            if zeros[j] == 1:
+                zero_count+=1
+        
+        period_indices[i,1] = j           
+        period_time += times[j]
+        
+    avg_turn_bias = np.average(integrated_angles)/period_time #average offset in deg
+    print(turn_rev)
+    print(integrated_angles)
+    
+    plt.figure("Spine Angle Time Series" + plot_name)    
+    if subplot==2:
+        color_ = 'r'
+    else:
+        color_='b'
+        
+    label_ = turn_rev  
+    
+    times = np.arange(0, timestep*np.shape(joint_data)[0]*2, timestep)
+    #plot timeseries for each spine angle
+    subplot=max(subplot,1)
+    for i in range(10):
+        
+        #phase shift all timeseries so that they start with the 1st joint
+        tpi = period_indices[i,:]
+        if period_indices[i,0]<period_indices[0,0] and turn_rev!="Reverse":
+            tpi= tpi + period_indices[0,1]-period_indices[0,0]     
+#        elif turn_rev=="Reverse":
+#            period_time = -abs(period_time)
+#            #if period_indices[i,0]>period_indices[0,0] and 
+#             #   tpi= tpi - period_indices[0,1]+period_indices[0,0]      
+            
+        plt.subplot(10,2,i*2+(subplot))
+        joint_data_ = joint_data[int(period_indices[i,0]):int(period_indices[i,1]),i]
+        times_ = times[int(tpi[0]):(int(tpi[0])+np.shape(joint_data_)[0])]
+        
+        plt.plot(times_,joint_data_,color=color_, label=label_)
+        plt.plot([times[int(period_indices[0,0])],times[int(period_indices[0,0])]+period_time*2],np.zeros([2,1]), color='k', linestyle='--')
+        if i==0:
+            plt.title("Spine Angle Timeseries (%s)\n %.1f deg avg. angle bias over period" % (turn_rev, avg_turn_bias))
+        if i==5:
+            plt.ylabel("Joint Angle [rad]")
+        if i<9:
+            plt.xticks([])
+        plt.ylabel("J%d" %i)
+    plt.xlabel("t [s]")    
+        
 def plot9d():
-    plot9d1()
+    #plot9d1()
     plot9d2()
 
 def plot9d1():
