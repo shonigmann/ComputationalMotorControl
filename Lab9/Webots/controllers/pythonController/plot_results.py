@@ -94,8 +94,8 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
         period_time += times[j]
         
     avg_turn_bias = np.average(integrated_angles)/period_time #average offset in deg
-    print(turn_rev)
-    print(integrated_angles)
+   # print(turn_rev)
+    #print(integrated_angles)
     
     plt.figure("Spine Angle Time Series" + plot_name)    
     if subplot==2:
@@ -114,17 +114,22 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
         tpi = period_indices[i,:]
         if period_indices[i,0]<period_indices[0,0] and turn_rev!="Reverse":
             tpi= tpi + period_indices[0,1]-period_indices[0,0]     
-#        elif turn_rev=="Reverse":
-#            period_time = -abs(period_time)
-#            #if period_indices[i,0]>period_indices[0,0] and 
-#             #   tpi= tpi - period_indices[0,1]+period_indices[0,0]      
-            
-        plt.subplot(10,2,i*2+(subplot))
+        elif turn_rev=="Reverse":
+            if i==0:
+                tpi= tpi + period_indices[0,1]-period_indices[0,0]
+            if period_indices[i,0]<period_indices[-1,0]:
+                tpi= tpi + period_indices[0,1]-period_indices[0,0]
+                
+        plt.subplot(10,1,i+1)
+        #plt.subplot(10,2,i*2+(subplot))
         joint_data_ = joint_data[int(period_indices[i,0]):int(period_indices[i,1]),i]
         times_ = times[int(tpi[0]):(int(tpi[0])+np.shape(joint_data_)[0])]
         
         plt.plot(times_,joint_data_,color=color_, label=label_)
-        plt.plot([times[int(period_indices[0,0])],times[int(period_indices[0,0])]+period_time*2],np.zeros([2,1]), color='k', linestyle='--')
+        if turn_rev!="Reverse":
+            plt.plot([times[int(period_indices[-1,0])],times[int(period_indices[-1,0])]+period_time*2],np.zeros([2,1]), color='k', linestyle='--')        
+        else:
+            plt.plot([times[int(period_indices[0,0])],times[int(period_indices[0,0])]+period_time*2],np.zeros([2,1]), color='k', linestyle='--')
         if i==0:
             plt.title("Spine Angle Timeseries (%s)\n %.1f deg avg. angle bias over period" % (turn_rev, avg_turn_bias))
         if i==5:
@@ -135,7 +140,7 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
     plt.xlabel("t [s]")    
         
 def plot9d():
-    #plot9d1()
+    plot9d1()
     plot9d2()
 
 def plot9d1():
@@ -151,7 +156,7 @@ def plot9d1():
         
             # Plot trajectory
             plt.figure("9d1: Trajectory")
-            plt.plot(link_data[:, 0], link_data[:, 2], label="Drive Diff = %.2f" % turn)
+            plt.plot(link_data[400:, 0], link_data[400:, 2], label="Drive Diff = %.2f" % turn)
             plt.xlabel("x [m]")
             plt.ylabel("z [m]")
             plt.legend()
@@ -168,10 +173,16 @@ def plot9d1():
                 timestep = float(data["timestep"])
                 turn_rev="Drive Diff = %.2f" % turn
                 plot_spine(timestep, joint_data, turn_rev, 8, "d1", 2)
-                
+
+            #if file_number==1:
+            torques = data["joints"][500:-1,:,3]
+            angle_changes = data["joints"][501:,:,0]-data["joints"][500:-1,:,0]
+            energy = np.sum(np.multiply(torques,angle_changes))
+            print("energy:")
+            print(energy)
             file_number = file_number + 1
 
-
+            
 def plot9d2():
     """Plot positions"""
     epsilon = 0.0001
@@ -194,7 +205,7 @@ def plot9d2():
         
             # Plot data
             plt.figure("9d2: Trajectory")
-            plt.plot(link_data[:, 0], link_data[:, 2], label=reversed+" Drive Diff = %.2f" % turn)
+            plt.plot(link_data[400:, 0], link_data[400:, 2], label=reversed+" Drive Diff = %.2f" % turn)
             plt.xlabel("x [m]")
             plt.ylabel("z [m]")
             plt.legend()
@@ -208,6 +219,21 @@ def plot9d2():
                 plot_spine(timestep, joint_data, rev_title, 8, "d2", subplot)
                 subplot = subplot+1
 
+def calc9d_energy():
+    #load files in folder
+    file_number = 1
+    for file in os.listdir('logs/9b'):
+        with np.load(os.path.join('logs/9b/',file)) as data:
+            
+            link_data = data["links"][:, 0, :]
+            joint_data = data["joints"][:,:,0]
+        
+            torques = data["joints"][500:-1,:,3]
+            angle_changes = data["joints"][501:,:,0]-data["joints"][500:-1,:,0]
+            energy = np.sum(np.multiply(torques,angle_changes))
+            print("energy:")
+            print(energy)
+            file_number = file_number + 1
 
 def plot_9c(plot=True):
     """Plot for exercise 9c"""
@@ -391,7 +417,8 @@ def main(plot=True, file=None):
 #                print(joints_data)
         #plot_turn_trajectory()
         #plot_reverse_trajectory()
-        plot9d()
+        #plot9d()
+        calc9d_energy()
     else:
         with np.load(file) as data:
             timestep = float(data["timestep"])

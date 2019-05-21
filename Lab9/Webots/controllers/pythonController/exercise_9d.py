@@ -70,7 +70,7 @@ def exercise_9d2(world, timestep, reset):
     """Exercise 9d2"""
     parameter_set = [
         SimulationParameters(
-            simulation_duration=5,
+            simulation_duration=10,
             use_drive_saturation=1,
             reverse = reverse,
             turn = turn,

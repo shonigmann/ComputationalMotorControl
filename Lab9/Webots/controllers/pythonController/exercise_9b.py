@@ -16,13 +16,13 @@ def exercise_9b(world, timestep, reset):
         SimulationParameters(
             simulation_duration=10,
             drive=1,
-            amplitudes=test,
-            phase_lag=np.ones(n_joints) * test2,
+            nominal_amplitudes=test,
+            body_phase_bias= test2,
             turn=0,
             # ...
         )
-        for test in np.linspace(0.5, 1.3, num=1)
-        for test2 in np.linspace(0.25, 0.5, num=1)
+        for test in np.linspace(0.25, .5, num=2)
+        for test2 in np.linspace(0.5, 1.3, num=2)
     ]
 
     # Grid search
