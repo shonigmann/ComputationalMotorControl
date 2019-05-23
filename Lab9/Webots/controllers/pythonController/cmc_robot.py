@@ -140,7 +140,6 @@ class SalamanderCMC(object):
 
         # Retrieve GPS to change from walking to swimming
         if self.iteration == 1:
-            self.thrust = 0
             self.enable = True
 
         pos = self.gps.getValues()
@@ -154,8 +153,6 @@ class SalamanderCMC(object):
         else:
             self.network.parameters.drive_left = 2.0
             self.network.parameters.drive_right = 2.0
-
-        print(self.network.parameters.drive_right)
 
         self.network.parameters.set_saturation_params(self.network.parameters)
         self.network.parameters.saturate_params()

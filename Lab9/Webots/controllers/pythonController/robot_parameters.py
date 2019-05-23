@@ -14,9 +14,6 @@ class RobotParameters(dict):
     def __init__(self, parameters):
         super(RobotParameters, self).__init__()
 
-        # Initialize some flags
-        self.smart = parameters.smart
-
         # Initialise parameters
         self.n_body_joints = parameters.n_body_joints
         self.n_legs_joints = parameters.n_legs_joints
@@ -48,7 +45,8 @@ class RobotParameters(dict):
         self.b = [0, 0, 0, 0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
         
         self.use_drive_saturation = 0
-        self.amplitude_gradient = None
+        self.rhead = None
+        self.rtail = None
 
         self.update(parameters)
 
@@ -201,8 +199,7 @@ class RobotParameters(dict):
                                                       llAmps*np.ones(self.n_legs_joints//2),
                                                       rlAmps*np.ones(self.n_legs_joints//2)])
 
-
     def set_gradient_amplitude(self, parameters):
         """Set gradient amplitudes"""
-        gradient = parameters.amplitude_gradient
-        self.amplitude_gradient = gradient / self.n_body_joints
+        self.rhead = parameters.rhead
+        self.rtail = parameters.rtail

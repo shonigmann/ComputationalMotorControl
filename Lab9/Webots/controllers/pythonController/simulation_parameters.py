@@ -49,8 +49,8 @@ class SimulationParameters(dict):
 
         # Parameters for 9c
         self.is_amplitude_gradient = None
-        self.amplitude_gradient = 0.0
-        self.smart = 0
+        self.rhead = 0.0
+        self.rtail = 0.0
 
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
