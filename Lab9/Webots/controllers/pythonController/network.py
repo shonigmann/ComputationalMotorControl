@@ -64,7 +64,7 @@ def motor_output(phases, amplitudes):
             #print("Swimming")
             q[i + nb_body_joints] = 0
         else:
-            print("Walking")
+            #print("Walking")
             q[i + nb_body_joints] = -phases[i + 2 * nb_body_joints]
 
     return q

@@ -146,6 +146,7 @@ class SalamanderCMC(object):
         pos = self.gps.getValues()
 
         if self.network.parameters.enable_transitions == True:
+            print("blah")
             if self.X_LOW_POS < pos[0] < self.X_HIGH_POS:
                 self.network.parameters.drive_left = 2.0 + 4 * (pos[0] - 0.25)
                 self.network.parameters.drive_right = 2.0 + 4 * (pos[0] - 0.25)

@@ -31,7 +31,6 @@ def plot_trajectory(link_data):
 
 def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot=0):
     # Plot spine angles
-    
     #cut out transient
     num_points = np.shape(joint_data)[0]
     if num_points > 500:
@@ -96,13 +95,14 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
     avg_turn_bias = np.average(integrated_angles)/period_time #average offset in deg
    # print(turn_rev)
     #print(integrated_angles)
-    
+    print(period_time)
     plt.figure("Spine Angle Time Series" + plot_name)    
     if subplot==2:
         color_ = 'r'
+        offset_time = 0.456
     else:
         color_='b'
-        
+        offset_time = 0.0
     label_ = turn_rev  
     
     times = np.arange(0, timestep*np.shape(joint_data)[0]*2, timestep)
@@ -116,12 +116,12 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
             tpi= tpi + period_indices[0,1]-period_indices[0,0]     
         elif turn_rev=="Reverse":
             if i==0:
-                tpi= tpi + period_indices[0,1]-period_indices[0,0]
+                tpi= tpi #+ period_indices[0,1]-period_indices[0,0]
             if period_indices[i,0]<period_indices[-1,0]:
                 tpi= tpi + period_indices[0,1]-period_indices[0,0]
                 
-        plt.subplot(10,1,i+1)
-        #plt.subplot(10,2,i*2+(subplot))
+        #plt.subplot(10,1,i+1)
+        plt.subplot(10,2,i*2+(subplot))
         joint_data_ = joint_data[int(period_indices[i,0]):int(period_indices[i,1]),i]
         times_ = times[int(tpi[0]):(int(tpi[0])+np.shape(joint_data_)[0])]
         
@@ -131,19 +131,20 @@ def plot_spine(timestep, joint_data, turn_rev, num_iter=5, plot_name="", subplot
         else:
             plt.plot([times[int(period_indices[0,0])],times[int(period_indices[0,0])]+period_time*2],np.zeros([2,1]), color='k', linestyle='--')
         if i==0:
-            plt.title("Spine Angle Timeseries (%s)\n %.1f deg avg. angle bias over period" % (turn_rev, avg_turn_bias))
+            plt.title("Spine Angle Timeseries for Different Turn Directions")#\n %.1f deg avg. angle bias over period" % (turn_rev, avg_turn_bias))
         if i==5:
             plt.ylabel("Joint Angle [rad]")
         if i<9:
             plt.xticks([])
         plt.ylabel("J%d" %i)
     plt.xlabel("t [s]")    
+    plt.legend()
         
-def plot9d():
-    plot9d1()
-    plot9d2()
+def plot_9d():
+    plot_9d1()
+    plot_9d2()
 
-def plot9d1():
+def plot_9d1():
     #load files in folder
     file_number = 1
     for file in os.listdir('logs/9d1'):
@@ -168,22 +169,22 @@ def plot9d1():
             if file_number == 1:
                 timestep = float(data["timestep"])
                 turn_rev="Drive Diff = %.2f" % turn
-                plot_spine(timestep, joint_data, turn_rev, 8, "d1", 1)
+                plot_spine(timestep, joint_data[78:], turn_rev, 8, "d1", 1)
             if file_number == len(os.listdir('logs/9d1')):
                 timestep = float(data["timestep"])
                 turn_rev="Drive Diff = %.2f" % turn
-                plot_spine(timestep, joint_data, turn_rev, 8, "d1", 2)
+                plot_spine(timestep, joint_data[194:], turn_rev, 8, "d1", 2)
 
             #if file_number==1:
-            torques = data["joints"][500:-1,:,3]
-            angle_changes = data["joints"][501:,:,0]-data["joints"][500:-1,:,0]
-            energy = np.sum(np.multiply(torques,angle_changes))
-            print("energy:")
-            print(energy)
+            #torques = data["joints"][500:-1,:,3]
+            #angle_changes = data["joints"][501:,:,0]-data["joints"][500:-1,:,0]
+            #energy = np.sum(np.multiply(torques,angle_changes))
+            #print("energy:")
+            #print(energy)
             file_number = file_number + 1
 
             
-def plot9d2():
+def plot_9d2():
     """Plot positions"""
     epsilon = 0.0001
     subplot = 1
@@ -219,7 +220,7 @@ def plot9d2():
                 plot_spine(timestep, joint_data, rev_title, 8, "d2", subplot)
                 subplot = subplot+1
 
-def calc9d_energy():
+def calc_9d_energy():
     #load files in folder
     file_number = 1
     for file in os.listdir('logs/9b'):
@@ -330,8 +331,68 @@ def plot_9f():
                 plt.xlabel("t [s]")
                 plt.ylabel("link phase [rad]")
                 plt.legend()
-                  
+            
+def plot_9f_network():
+    """Plot positions"""
+    subplot = 1
+    color = 'b'
+    title = "Swimming"
+    for file in os.listdir('logs/9f'):
+        with np.load(os.path.join('logs/9f/', file)) as data:
+          
+            joints = data["joints"]
+            
+            # Plot data
+            n_links = (len(joints[0,:,0]))-4
+            network_output = joints[1500:2500,:,2]
+            timestep = float(data["timestep"])
+            
+            times = np.arange(0, timestep*np.shape(network_output)[0], timestep)
+               
+            for i in range(n_links):
+                plt.subplot(10,2,i*2+(subplot))
+                
+                plt.plot(times,network_output[:,i],color=color, label=title)
+                
+                plt.ylabel("J%d" %i)
+                
+                if i==0:
+                    plt.title("Joint Commands During %s" % title)#\n %.1f deg avg. angle bias over period" % (turn_rev, avg_turn_bias))
+                if i==5:
+                    plt.ylabel("Joint Command\nJ%d" % i)
+                if i<9:
+                    plt.xticks([])
+            plt.xlabel("t [s]")    
+            plt.legend()
+            
+            subplot = subplot+1
+            color = 'r'
+            title = "Walking"
 
+def plot_9f3():
+    plt.figure("Salamander Walking with Different Spine-Limb Phase Offsets")
+    num_files = 7
+    i=0
+    clean_val = 1000
+    speeds = np.zeros([num_files,1])
+    biases = np.zeros([num_files,1])
+    for file in os.listdir('logs/9f3'):
+        with np.load(os.path.join('logs/9f3/', file)) as data:
+            link_data = data["links"][:, 0, :]
+            timestep = float(data["timestep"])
+    
+            times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
+            speed = np.linalg.norm(link_data[clean_val,:] - link_data[-1,:])/(times[-1]-times[clean_val])
+            speeds[i] = speed
+            temp_bias = data["body_limb_phase_bias"]
+            biases[i] = temp_bias
+            i+=1
+        
+    plt.plot(biases,speeds)  
+        
+    plt.title("Walking with Different Spine-Limb Phase Offsets")
+    plt.xlabel("Body-Limb Phase Offset [rad]")
+    plt.xlabel("Walking Speed [m/s]")
 
 def plot_9g():
     """Plot positions"""
@@ -399,26 +460,11 @@ def main(plot=True, file=None):
     """Main"""
     # Load data
     if file is None:
-#        for file in os.listdir('logs/9d1'):
-#            with np.load(os.path.join('logs/9d1/',file)) as data:
-#                timestep = float(data["timestep"])
-#                #amplitude = data["amplitudes"]
-#                #phase_lag = data["phase_lag"]
-#                link_data = data["links"][:, 0, :]
-#                joints_data = data["joints"]
-#                times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
-#            
-#                # Plot data
-#                plt.figure("Positions")
-#                plot_positions(times, link_data)
-#            
-#                plt.figure("Trajectory")
-#                plot_trajectory(link_data)
-#                print(joints_data)
-        #plot_turn_trajectory()
-        #plot_reverse_trajectory()
-        #plot9d()
-        calc9d_energy()
+        #plot_9d()
+        #calc_9d_energy()
+        #plot_9f()
+        #plot_9f_network()
+        plot_9f3()
     else:
         with np.load(file) as data:
             timestep = float(data["timestep"])

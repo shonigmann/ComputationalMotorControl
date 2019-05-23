@@ -19,6 +19,7 @@ class SimulationParameters(dict):
         self.coupling_weights = 10.0  # w_ij
         self.limb_body_weight = 30.0 #weight from limb to body
         self.body_phase_bias = 0.2*math.pi  # theta_ij
+        self.body_limb_phase_bias = math.pi
         self.limb_phase_bias = math.pi
 
         self.amplitudes_rate = 20.0  # a_i
