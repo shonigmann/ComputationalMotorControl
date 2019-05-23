@@ -94,7 +94,7 @@ def main_9b(simulation_i, plot=True):
     if plot:
         plt.show()
     else:
-            save_figures()
+        save_figures()
             
 def main_9bEnergy(simulation_i, Elements, Energy_matrix, plot=True):
     """Main"""
@@ -108,8 +108,8 @@ def main_9bEnergy(simulation_i, Elements, Energy_matrix, plot=True):
 #    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
     
     #CALCULATE ENERGY
-    torque_vector = joints_data[500:-2 , : , 3]
-    d_angle = joints_data[ 501:-1 , : , 0] - joints_data[ 500:-2 , : , 0]
+    torque_vector = joints_data[500:-1 , : , 3]
+    d_angle = joints_data[ 501: , : , 0] - joints_data[ 500:-1 , : , 0]
     
     #print(np.shape(torque_vector))
     #print('Angle: ', np.shape(d_angle))
@@ -143,5 +143,9 @@ def main_9bEnergy(simulation_i, Elements, Energy_matrix, plot=True):
 
 if __name__ == '__main__':
     #main(plot=not save_plots())
-    main_9bEnergy()
-    main_9b()
+#    main_9bEnergy()
+    main_9b(0)
+    main_9b(1)
+    main_9b(2)
+    main_9b(3)
+    

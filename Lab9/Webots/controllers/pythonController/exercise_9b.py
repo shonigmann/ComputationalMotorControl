@@ -14,25 +14,25 @@ def exercise_9b(world, timestep, reset):
        
     n_joints = 10
     #Grid points
-    test = np.linspace( 0.5, 1.3, num=3)
-    test2 = np.linspace(0.25, 0.5, num=3)
+    test = np.linspace( 0.25, 0.5, num=2)
+    test2 = np.linspace(0.5, 1.3, num=2)
     Energy_matrix = np.zeros( ( len(test), len(test2) ) )
     Elements = len(test)*len(test2)
     
     parameter_set = [
         SimulationParameters(
-            simulation_duration=12,
+            simulation_duration=10,
             drive=1,
-            amplitudes= test_i,
+            nominal_amplitudes= test_i,
             #phase_lag=np.zeros(n_joints),
             #nominal_amplitudes = [1,2,3], #test
-            phase_lag = np.ones(n_joints)*test2_i,#[1,2,3], #test2
+            axial_cpg_phase_bias = test2_i,#[1,2,3], #test2
             turn=0,
            # print(phase_lag[1])
             # ...
         )
         for test_i in test
-            for test2_i in test2
+        for test2_i in test2
         #for test2 in np.linspace(0.01*math.pi, 1*math.pi, num=3)
     ]
     np.savez('./logs/9b/Energies.npz', Amplitudes=test, PhaseLag=test2)
