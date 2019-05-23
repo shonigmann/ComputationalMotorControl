@@ -22,7 +22,7 @@ class SimulationParameters(dict):
         self.limb_phase_bias = math.pi
 
         self.amplitudes_rate = 20.0  # a_i
-        self.freqs = 5 # f_i
+        self.freqs = 1 # f_i
         self.nominal_amplitudes = 0.5  # R_i for body
         self.nominal_limb_amplitudes = 0.0 # R_i for limbs
 

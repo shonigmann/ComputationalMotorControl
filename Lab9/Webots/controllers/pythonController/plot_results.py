@@ -79,13 +79,9 @@ def plot_9c(plot=True):
     num_files = len([f for f in os.listdir(pathfile)])
 
     gradient = np.zeros(num_files)
-
-    if pathfile is ('logs/9c/head_gradient_only/' or 'logs/9c/tail_gradient_only/'):
-        speed_plot = np.zeros(num_files)
-        energy_plot = np.zeros(num_files)
-    else:
-        speed_plot = np.zeros((num_files, 3))
-        energy_plot = np.zeros((num_files, 3))
+    speed_plot = np.zeros((num_files, 3))
+    energy_plot = np.zeros((num_files, 3))
+    speed_energy = np.zeros((num_files, 3))
 
     nb_body_joints = 10
     clean_val = 500
@@ -106,43 +102,30 @@ def plot_9c(plot=True):
         gradient[i] = (rhead - rtail) / nb_body_joints
         tot_energy = np.sum(torque[clean_val:-1, :nb_body_joints]*(angle[clean_val + 1:, :nb_body_joints]-angle[clean_val:-1, :nb_body_joints]))
 
-        if pathfile is ('logs/9c/head_gradient_only/' or 'logs/9c/tail_gradient_only/'):
-            # Plot speed data
-            plt.figure("Speed vs Gradient amplitude")
-            plt.plot(times[clean_val:], speed, label='Gradient {}'.format(gradient[i]))
-            plt.legend()
-            plt.xlabel("Time [s]")
-            plt.ylabel("Mean speed [m/s]")
-            plt.grid(True)
+        energy_plot[i, 0] = rhead
+        energy_plot[i, 1] = rtail
+        energy_plot[i, 2] = tot_energy
 
-            energy_plot[i] = tot_energy
-            speed_plot[i] = speed
-        else:
-            energy_plot[i, 0] = rhead
-            energy_plot[i, 1] = rtail
-            energy_plot[i, 2] = tot_energy
+        speed_plot[i, 0] = rhead
+        speed_plot[i, 1] = rtail
+        speed_plot[i, 2] = speed[-1]
 
-            speed_plot[i, 0] = rhead
-            speed_plot[i, 1] = rtail
-            speed_plot[i, 2] = speed[-1]
+        speed_energy[i, 0] = rhead
+        speed_energy[i, 1] = rtail
+        speed_energy[i, 2] = speed[-1]/tot_energy
 
-    if pathfile is ('logs/9c/head_gradient_only/' or 'logs/9c/tail_gradient_only/'):
-        # Plot energy data
-        plt.figure("Energy vs Gradient amplitude")
-        plt.plot(gradient, energy_plot)
-        plt.legend()
-        plt.xlabel("Gradient [-]")
-        plt.ylabel("Energy [J]")
-        plt.grid(True)
-    else:
-        # Plot energy data in 2D
-        plt.figure("Energy vs Gradient amplitude")
-        labels = ['rhead', 'rtail', 'Energy [J]']
-        plot_2d(energy_plot, labels)
+    # Plot energy data in 2D
+    plt.figure("Energy vs Gradient amplitude")
+    labels = ['rhead', 'rtail', 'Energy [J]']
+    plot_2d(energy_plot, labels)
 
-        plt.figure("Speed vs Gradient amplitude")
-        labels = ['rhead', 'rtail', 'Mean speed [m/s]']
-        plot_2d(speed_plot, labels)
+    plt.figure("Speed vs Gradient amplitude")
+    labels = ['rhead', 'rtail', 'Mean speed [m/s]']
+    plot_2d(speed_plot, labels)
+
+    plt.figure("Speed/Energy vs Gradient amplitude")
+    labels = ['rhead', 'rtail', 'Mean speed / energy [m/sJ]']
+    plot_2d(speed_energy, labels)
 
     # Show plots
     if plot:

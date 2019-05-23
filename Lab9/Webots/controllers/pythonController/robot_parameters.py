@@ -96,7 +96,6 @@ class RobotParameters(dict):
             for j in range(self.n_body_joints//2):
                 self.coupling_weights[index, i * self.n_body_joints // 2 + j] = limb_weight
 
-
     def set_phase_bias(self, parameters):
         """Set phase bias"""
         body_bias = parameters.body_phase_bias
