@@ -72,6 +72,51 @@ def plot_reverse_trajectory():
             plt.grid(True)
 
 
+def plot_9b(plot=True):
+    """Plot for exercise 9c"""
+    # Load data
+    pathfile = 'logs/9b/'
+    num_files = len([f for f in os.listdir(pathfile)])
+
+    energy_plot = np.zeros(num_files)
+    
+    gradient = np.zeros(num_files)
+
+    energy_plot = np.zeros((num_files, 3))
+    
+    nb_body_joints = 10
+    clean_val = 500
+
+    for i in range(num_files):
+        with np.load(pathfile + 'test_{}.npz'.format(i)) as data:
+#            timestep = float(data["timestep"])
+#            rhead = data["rhead"]
+#            rtail = data["rtail"]
+#            link_data = data["links"][:, 0, :]
+            angle = data["joints"][:, :, 0]
+            torque = data["joints"][:, :, 3]
+            nominal_ampl = data['nominal_amplitudes']
+
+        # Plot sum energy over a simulation
+        tot_energy = np.sum(torque[clean_val:-1, :nb_body_joints]*(angle[clean_val + 1:, :nb_body_joints]-angle[clean_val:-1, :nb_body_joints]))
+        
+    
+    
+#    # Plot energy data in 2D
+    plt.figure("Energy in grid: Amplitude vs phase")
+    labels = ['rhead', 'rtail', 'Energy [J]']
+    plot_2d(energy_plot, labels)
+#
+#    plt.figure("Speed vs Gradient amplitude")
+#    labels = ['rhead', 'rtail', 'Mean speed [m/s]']
+#    plot_2d(speed_plot, labels)
+
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()
+
 def plot_9c(plot=True):
     """Plot for exercise 9c"""
     # Load data
@@ -279,5 +324,5 @@ def main(plot=True, file=None):
 
 if __name__ == '__main__':
     #main(plot=not save_plots())
-    plot_9c()
+    plot_9b()
 

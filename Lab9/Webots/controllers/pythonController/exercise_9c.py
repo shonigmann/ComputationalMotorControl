@@ -20,8 +20,8 @@ def exercise_9c(world, timestep, reset):
             turn=1,
             # ...
         )
-        for rhead in np.linspace(0.0, 0.5, num=3)
-        for rtail in np.linspace(0.0, 0.5, num=3)
+        for rhead in np.linspace(0.0, 0.5, num=1)
+        for rtail in np.linspace(0.0, 0.5, num=1)
     ]
 
     # Grid search

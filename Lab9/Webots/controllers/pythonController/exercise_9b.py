@@ -11,10 +11,17 @@ from simulation_parameters import SimulationParameters
 def exercise_9b(world, timestep, reset):
     """Exercise 9b"""
     # Parameters
+    
     n_joints = 10
+    
+    
+    
+    
+    
+    
     parameter_set = [
         SimulationParameters(
-            simulation_duration=10,
+            simulation_duration=7,
             nominal_amplitudes=test,
             body_phase_bias=test2,
             drive=1,
@@ -33,5 +40,6 @@ def exercise_9b(world, timestep, reset):
             parameters,
             timestep,
             int(1000 * parameters.simulation_duration / timestep),
-            logs="./logs/9b/simulation_{}.npz".format(simulation_i)
+            logs="./logs/9b/test_{}.npz".format(simulation_i)
         )
+
