@@ -26,7 +26,7 @@ class SimulationParameters(dict):
         self.freqs = 5 # f_i
         self.nominal_amplitudes = 0.5  # R_i for body
         self.nominal_limb_amplitudes = 0.0 # R_i for limbs
-
+        
         # Parameters for 9d
         self.drive_left = 2.0
         self.drive_right = 2.0

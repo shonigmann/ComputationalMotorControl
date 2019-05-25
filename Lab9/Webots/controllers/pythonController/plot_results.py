@@ -371,7 +371,7 @@ def plot_9f_network():
 
 def plot_9f3():
     plt.figure("Salamander Walking with Different Spine-Limb Phase Offsets")
-    num_files = 7
+    num_files = 9
     i=0
     clean_val = 1000
     speeds = np.zeros([num_files,1])
@@ -392,7 +392,47 @@ def plot_9f3():
         
     plt.title("Walking with Different Spine-Limb Phase Offsets")
     plt.xlabel("Body-Limb Phase Offset [rad]")
-    plt.xlabel("Walking Speed [m/s]")
+    plt.ylabel("Walking Speed [m/s]")
+    
+def plot_9f4():
+    #plt.figure("Salamander Walking with Different Spine-Limb Phase Offsets")
+    fig,ax1 = plt.subplots()
+    num_files = 15
+    i=0
+    clean_val = 1000
+    speeds = np.zeros([num_files,1])
+    body_amp = np.zeros([num_files,1])
+    powers = np.zeros([num_files,1])
+    
+    for file in os.listdir('logs/9f4'):
+        with np.load(os.path.join('logs/9f4/', file)) as data:
+            link_data = data["links"][:, 0, :]
+            timestep = float(data["timestep"])
+    
+            times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
+            speed = np.linalg.norm(link_data[clean_val,:] - link_data[-1,:])/(times[-1]-times[clean_val])
+            speeds[i] = speed
+            body_amplitude = data["nominal_amplitudes"]
+            body_amp[i] = body_amplitude
+            
+            torques = data["joints"][clean_val:,:,3]
+            joint_vels = data["joints"][(clean_val):,:,1]
+            avg_power = np.average(np.multiply(torques,joint_vels))
+            powers[i] = avg_power 
+            i+=1
+        
+    cost_of_transport = np.divide(speeds,powers)
+        
+    ax1.plot(body_amp,speeds, color='b', label='Speed')  
+    plt.title("Walking with Different Spine Curvatures")
+    ax1.set_xlabel("Body Amplitude [rad]")
+    ax1.set_ylabel("Walking Speed [m/s]")
+    plt.legend()
+        
+    ax2 = ax1.twinx()
+    ax2.set_ylabel("Cost of Transport (m/J))")
+    ax2.plot(body_amp, cost_of_transport, color='r', label='COT')
+    plt.legend()
 
 def plot_9g():
     """Plot positions"""
@@ -464,7 +504,8 @@ def main(plot=True, file=None):
         #calc_9d_energy()
         #plot_9f()
         #plot_9f_network()
-        plot_9f3()
+        #plot_9f3()
+        plot_9f4()
     else:
         with np.load(file) as data:
             timestep = float(data["timestep"])
