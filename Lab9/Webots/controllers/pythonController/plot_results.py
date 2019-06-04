@@ -20,9 +20,26 @@ def plot_positions(times, link_data):
     plt.ylabel("Distance [m]")
     plt.grid(True)
 
-
 def plot_trajectory(link_data):
     """Plot positions"""
+    plt.plot(link_data[:, 0], link_data[:, 2])
+    plt.xlabel("x [m]")
+    plt.ylabel("z [m]")
+    plt.axis("equal")
+    plt.grid(True)
+    
+def plot_trajectoryDirect():
+    """Plot positions"""
+    pathfile = 'logs/9b/'
+    with np.load(pathfile + 'test_7.npz') as data:
+#            timestep = float(data["timestep"])
+#            rhead = data["rhead"]
+#            rtail = data["rtail"]
+            link_data = data["links"][:, 0, :]
+#            angle = data["joints"][:, :, 0]
+#            torque = data["joints"][:, :, 3]
+    
+    
     plt.plot(link_data[:, 0], link_data[:, 2])
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
@@ -31,7 +48,7 @@ def plot_trajectory(link_data):
 
 def plot_turn_trajectory():
     """Plot positions"""
-    for file in os.listdir('logs/9d1'):
+    for file in os.listdir('logs/9b/test_0'):
         with np.load(os.path.join('logs/9d1/',file)) as data:
             #amplitude = data["amplitudes"]
             #phase_lag = data["phase_lag"]
@@ -75,14 +92,14 @@ def plot_reverse_trajectory():
 def plot_9b(plot=True):
     """Plot for exercise 9c"""
     # Load data
-    pathfile = 'logs/9b/'
+    pathfile = 'logs/9b/dr6_bPhases7_42/'
     num_files = len([f for f in os.listdir(pathfile)])
-
-    energy_plot = np.zeros(num_files)
     
     gradient = np.zeros(num_files)
 
     energy_plot = np.zeros((num_files, 3))
+    speed_plot = np.zeros((num_files, 3))
+    cost_transport = np.zeros((num_files, 3))
     
     nb_body_joints = 10
     clean_val = 500
@@ -92,21 +109,51 @@ def plot_9b(plot=True):
 #            timestep = float(data["timestep"])
 #            rhead = data["rhead"]
 #            rtail = data["rtail"]
-#            link_data = data["links"][:, 0, :]
+            timestep = float(data["timestep"])
+            link_data = data["links"][:, 0, :]
             angle = data["joints"][:, :, 0]
             torque = data["joints"][:, :, 3]
             nominal_ampl = data['nominal_amplitudes']
+            body_phase_bias = data['body_phase_bias']
 
-        # Plot sum energy over a simulation
-        tot_energy = np.sum(torque[clean_val:-1, :nb_body_joints]*(angle[clean_val + 1:, :nb_body_joints]-angle[clean_val:-1, :nb_body_joints]))
+        #Speed calculation
+        times = np.arange(0, timestep * np.shape(link_data)[0], timestep)
+        speed = np.linalg.norm(link_data[-1] - link_data[clean_val] )/(times[-1]-times[clean_val])
         
+        
+        # Plot sum energy over a simulation
+        
+        tot_energy = np.sum(torque[clean_val:-1, :nb_body_joints]*(angle[clean_val + 1:, :nb_body_joints]-angle[clean_val:-1, :nb_body_joints]))
+        energy_plot[i] = [nominal_ampl, body_phase_bias, tot_energy]
+        speed_plot[i] = [nominal_ampl, body_phase_bias, speed]
+        
+        cost = np.linalg.norm(link_data[-1] - link_data[clean_val] )/tot_energy
+        print(link_data[-1])
+        print(cost)
+        cost_transport[i ] = [nominal_ampl, body_phase_bias, cost]
     
+    print(energy_plot)
+    print(speed_plot)
     
 #    # Plot energy data in 2D
-    plt.figure("Energy in grid: Amplitude vs phase")
-    labels = ['rhead', 'rtail', 'Energy [J]']
+    name1 = "Energy in grid: Amplitude vs phase"
+    plt.figure(name1)
+    plt.title(name1)
+    labels = ['CPG Amplitude', 'CPG body phase bias [rad]', 'Energy [J]']
     plot_2d(energy_plot, labels)
+    
+    name2 = "Speed in grid: Amplitude vs phase"
+    plt.figure(name2)
+    plt.title(name2)
+    labels = ['CPG Amplitude', 'CPG body phase bias [rad]', 'Speed [m/s]']
+    plot_2d(speed_plot, labels)
 #
+    name3 = "Cost of transport in grid: Amplitude vs phase"
+    plt.figure(name3)
+    plt.title(name3)
+    labels = ['CPG Amplitude', 'CPG body phase bias [rad]', 'transport cost [m/s/J]']
+    plot_2d(cost_transport, labels)
+    
 #    plt.figure("Speed vs Gradient amplitude")
 #    labels = ['rhead', 'rtail', 'Mean speed [m/s]']
 #    plot_2d(speed_plot, labels)
@@ -325,4 +372,4 @@ def main(plot=True, file=None):
 if __name__ == '__main__':
     #main(plot=not save_plots())
     plot_9b()
-
+#    plot_trajectoryDirect()

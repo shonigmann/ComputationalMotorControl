@@ -21,15 +21,21 @@ def exercise_9b(world, timestep, reset):
     
     parameter_set = [
         SimulationParameters(
-            simulation_duration=7,
-            nominal_amplitudes=test,
+            simulation_duration=15,
+#            nominal_amplitudes=test,
+            drive_right = test,
+            drive_left = test,
             body_phase_bias=test2,
-            drive=1,
+            use_drive_saturation = 1,
             turn=0,
             # ...
         )
-        for test in np.linspace(0.25, 0.5, num=2)
-        for test2 in np.linspace(0.5, 1.3, num=2)
+        for test in np.linspace(3.0, 5.0, num=6)
+            #As seen in Ijspeer paper fig.1.B. 
+            
+        for test2 in np.linspace(2*np.pi/10-0.2, 2*np.pi/10+0.2, num=7)
+            #We know nature is set to 2*pi/length. So we could test from lower than 2*pi/lengh to above of it. 
+            #Different proposals with 2*pi/lenght on the center value. 
     ]
 
     # Grid search

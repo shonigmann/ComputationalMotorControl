@@ -198,7 +198,8 @@ class RobotParameters(dict):
                                                       rightAmps*np.ones(self.n_body_joints),
                                                       llAmps*np.ones(self.n_legs_joints//2),
                                                       rlAmps*np.ones(self.n_legs_joints//2)])
-
+            print(self.nominal_amplitudes)
+            
     def set_gradient_amplitude(self, parameters):
         """Set gradient amplitudes"""
         self.rhead = parameters.rhead
