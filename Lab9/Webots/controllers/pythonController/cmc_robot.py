@@ -11,9 +11,7 @@ class SalamanderCMC(object):
 
     N_BODY_JOINTS = 10
     N_LEGS = 4
-    MOVING_AVERAGE = 100
-    THRUSTING = 50
-    X_HIGH_POS = 0.75
+    X_HIGH_POS = 1.0
     X_LOW_POS = 0.25
 
     def __init__(self, robot, n_iterations, parameters, logs="logs/log.npz"):
@@ -35,7 +33,6 @@ class SalamanderCMC(object):
 
         # GPS
         self.enable = False
-        self.mean_x = np.zeros(self.MOVING_AVERAGE)
         self.gps = robot.getGPS("fgirdle_gps")
         self.gps.enable(timestep)
 
@@ -140,24 +137,23 @@ class SalamanderCMC(object):
 
         # Retrieve GPS to change from walking to swimming
         if self.iteration == 1:
-            self.thrust = 0
             self.enable = True
 
         pos = self.gps.getValues()
 
-        if self.network.parameters.enable_transitions == True:
-            print("blah")
-            if self.X_LOW_POS < pos[0] < self.X_HIGH_POS:
-                self.network.parameters.drive_left = 2.0 + 4 * (pos[0] - 0.25)
-                self.network.parameters.drive_right = 2.0 + 4 * (pos[0] - 0.25)
-            elif pos[0] > self.X_HIGH_POS:
+        if self.network.parameters.enable_transitions:
+ #           if self.X_LOW_POS < pos[0] < self.X_HIGH_POS:
+ #               self.network.parameters.drive_left = 2.0 + 4 * (pos[0] - 0.25)
+ #               self.network.parameters.drive_right = 2.0 + 4 * (pos[0] - 0.25)
+            if pos[0] > self.X_HIGH_POS:
                 self.network.parameters.drive_left = 4.0
                 self.network.parameters.drive_right = 4.0
-            else:
+            elif pos[0] < self.X_LOW_POS:
                 self.network.parameters.drive_left = 2.0
                 self.network.parameters.drive_right = 2.0
-    
-            print(self.network.parameters.drive_right)
-    
+
+ #           self.network.parameters.drive_left -= pos[2] / 5
+ #           self.network.parameters.drive_right += pos[2] / 5
+
             self.network.parameters.set_saturation_params(self.network.parameters)
             self.network.parameters.saturate_params()

@@ -45,7 +45,8 @@ class RobotParameters(dict):
         self.b = [0, 0, 0, 0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
         
         self.use_drive_saturation = 0
-        self.amplitude_gradient = None
+        self.rtail = None
+        self.rhead = None
         self.enable_transitions = parameters.enable_transitions
 
         self.update(parameters)
@@ -149,7 +150,6 @@ class RobotParameters(dict):
         amplitude = parameters.nominal_amplitudes
         self.nominal_amplitudes = amplitude * np.ones(2 * self.n_body_joints + self.n_legs_joints)
         self.nominal_amplitudes[2*self.n_body_joints:2*self.n_body_joints+self.n_legs_joints] = parameters.nominal_limb_amplitudes *np.ones(self.n_legs_joints)
-        
 
     def set_drive_rates(self, parameters):
         self.drive_left = parameters.drive_left
@@ -213,7 +213,6 @@ class RobotParameters(dict):
                                                       rightAmps*np.ones(self.n_body_joints),
                                                       llAmps*np.ones(self.n_legs_joints//2),
                                                       rlAmps*np.ones(self.n_legs_joints//2)])
-            print(self.nominal_amplitudes)
             
     def set_gradient_amplitude(self, parameters):
         """Set gradient amplitudes"""

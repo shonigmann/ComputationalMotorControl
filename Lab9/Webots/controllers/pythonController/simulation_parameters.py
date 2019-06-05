@@ -33,7 +33,6 @@ class SimulationParameters(dict):
 
         self.cv_body = [0.2, 0.3] #cv1, cv0
         self.cv_limb = [0.2, 0.0] #cv1, cv0
-        #self.cR_body = [0.065, 0.196] #cR1, cR0
         self.cR_body = [0.05, 0.16] #cR1, cR0
         self.cR_limb = [0.131, 0.131] #cR1, cR0
         
@@ -75,4 +74,4 @@ class SimulationParameters(dict):
         
         if self.use_drive_saturation != 0:
             self.nominal_amplitudes =(self.drive_left+self.drive_right)/2*self.cR_body[0]+self.cR_body[1]   # R_i for body
-            
+

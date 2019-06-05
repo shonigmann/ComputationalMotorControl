@@ -13,14 +13,14 @@ def exercise_9g(world, timestep, reset):
 
     parameter_set = [
         SimulationParameters(
-            simulation_duration=20,
+            simulation_duration=40,
             use_drive_saturation=1,
             shes_got_legs=1,
-            cR_body=[0.065, 0.196],  # cR1, cR0
-            cR_limb=[0.131, 0.131],  # cR1, cR0
-            amplitudes_rate=20,
+            cR_body=[0.052, 0.196],  # cR1, cR0
+            cR_limb=[0.105, 0.131],  # cR1, cR0
             drive_left=2.0,
             drive_right=2.0,
+            enable_transitions=True,
             # ...
         )
         # for turn in np.linspace(-.2,.2, 7)

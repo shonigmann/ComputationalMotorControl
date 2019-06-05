@@ -635,5 +635,5 @@ def main(plot=True, file=None):
 
 
 if __name__ == '__main__':
-    #main(plot=not save_plots())
-    main()
+    main(plot=not save_plots())
+
