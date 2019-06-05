@@ -45,8 +45,8 @@ class RobotParameters(dict):
         self.b = [0, 0, 0, 0] #gain used for limb position control (move to streamline if limb drive is saturated, else move as normal)
         
         self.use_drive_saturation = 0
-        self.rhead = None
-        self.rtail = None
+        self.amplitude_gradient = None
+        self.enable_transitions = parameters.enable_transitions
 
         self.update(parameters)
 
@@ -84,22 +84,30 @@ class RobotParameters(dict):
             self.coupling_weights[i, i + self.n_body_joints] = weight
             self.coupling_weights[i + self.n_body_joints, i] = weight
 
-        for i in range(self.n_legs_joints):
+        for i in range(self.n_legs_joints):              
             index = i+self.n_body_joints*2
-            index_transverse = (index+1)%self.n_legs_joints + self.n_body_joints #adjacent index either fwd or bck from current
-            index_saggital = (index+2)%self.n_legs_joints + self.n_body_joints #adjacent index either left or right of current
-            
-            self.coupling_weights[index, index_transverse] = weight
-            self.coupling_weights[index, index_saggital] = weight
-
             #set weight from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
             for j in range(self.n_body_joints//2):
-                self.coupling_weights[index, i * self.n_body_joints // 2 + j] = limb_weight
+                self.coupling_weights[i * self.n_body_joints // 2 + j, index] = limb_weight
+  
+        i = self.n_body_joints * 2
+        self.coupling_weights[i + 1, i] = weight
+        self.coupling_weights[i + 2, i] = weight
+        
+        self.coupling_weights[i, i + 1] = weight
+        self.coupling_weights[i + 3, i + 1] = weight
+        
+        self.coupling_weights[i, i + 2] = weight
+        self.coupling_weights[i + 3, i + 2] = weight
+        
+        self.coupling_weights[i + 1, i + 3] = weight
+        self.coupling_weights[i + 2, i + 3] = weight
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
         body_bias = parameters.body_phase_bias
         limb_bias = parameters.limb_phase_bias
+        body_limb_bias = parameters.body_limb_phase_bias
 
         for i in range(self.n_body_joints):
             if i != self.n_body_joints - 1:
@@ -114,15 +122,23 @@ class RobotParameters(dict):
 
         for i in range(self.n_legs_joints):
             index = i + self.n_body_joints * 2
-            index_transverse = (index + 1) % self.n_legs_joints + self.n_body_joints  # adjacent index either fwd or bck from current
-            index_saggital = (index + 2) % self.n_legs_joints + self.n_body_joints  # adjacent index either left or right of current
-
-            self.phase_bias[index, index_transverse] = limb_bias
-            self.phase_bias[index, index_saggital] = limb_bias
 
             # set bias from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
             for j in range(self.n_body_joints // 2):
-                self.phase_bias[index, i * self.n_body_joints // 2 + j] = limb_bias
+                self.phase_bias[i * self.n_body_joints // 2 + j,index] = body_limb_bias
+        
+        i=self.n_body_joints*2
+        self.phase_bias[i+1, i] = limb_bias
+        self.phase_bias[i+2, i] = limb_bias
+        
+        self.phase_bias[i, i+1] = limb_bias
+        self.phase_bias[i+3, i+1] = limb_bias
+        
+        self.phase_bias[i, i+2] = limb_bias
+        self.phase_bias[i+3, i+2] = limb_bias
+        
+        self.phase_bias[i+1, i+3] = limb_bias
+        self.phase_bias[i+2, i+3] = limb_bias
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
@@ -133,7 +149,7 @@ class RobotParameters(dict):
         amplitude = parameters.nominal_amplitudes
         self.nominal_amplitudes = amplitude * np.ones(2 * self.n_body_joints + self.n_legs_joints)
         self.nominal_amplitudes[2*self.n_body_joints:2*self.n_body_joints+self.n_legs_joints] = parameters.nominal_limb_amplitudes *np.ones(self.n_legs_joints)
-
+        
 
     def set_drive_rates(self, parameters):
         self.drive_left = parameters.drive_left
@@ -197,7 +213,8 @@ class RobotParameters(dict):
                                                       rightAmps*np.ones(self.n_body_joints),
                                                       llAmps*np.ones(self.n_legs_joints//2),
                                                       rlAmps*np.ones(self.n_legs_joints//2)])
-
+            print(self.nominal_amplitudes)
+            
     def set_gradient_amplitude(self, parameters):
         """Set gradient amplitudes"""
         self.rhead = parameters.rhead

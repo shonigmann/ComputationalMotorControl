@@ -136,8 +136,8 @@ class SalamanderNetwork(ODESolver):
         # Parameters
         self.parameters = RobotParameters(parameters)
         # Set initial state
-        #self.state.phases = 1e-4 * np.linspace(0, 1, num=self.parameters.n_oscillators)
-        self.state.phases = 1e-4*np.random.ranf(self.parameters.n_oscillators)
+        self.state.phases = 1e-4 * np.linspace(0, 1, num=self.parameters.n_oscillators)
+#        self.state.phases = 1e-4*np.random.ranf(self.parameters.n_oscillators)
 
     def step(self):
         """Step"""
