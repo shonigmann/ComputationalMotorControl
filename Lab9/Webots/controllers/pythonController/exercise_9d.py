@@ -5,17 +5,18 @@ from simulation_parameters import SimulationParameters
 import plot_results
 
 
-def exercise_9d1(world, timestep, reset):
-    """Exercise 9d1"""
-#    n_joints = 10
+def exercise_9d1(world, timestep, reset):  
     parameter_set = [
         SimulationParameters(
             simulation_duration=10,
             use_drive_saturation=1,
-            turn=turn,
-            shes_got_legs = 1,
-            drive_left = 4.0,
-            drive_right = 4.0,
+            shes_got_legs=1,
+            cR_body = [0.05, 0.16], #cR1, cR0
+            cR_limb = [0.131, 0.131], #cR1, cR0
+            amplitudes_rate = 40,
+            drive_left = 3.3,
+            drive_right = 3.3,
+            turn=turn
             # ...
         )
         for turn in np.linspace(-.2,.2, 7)
@@ -33,19 +34,19 @@ def exercise_9d1(world, timestep, reset):
             logs="./logs/9d1/simulation_{}.npz".format(simulation_i)
         )
 
-    plot_results.plot_turn_trajectory()
-
 def exercise_9d2(world, timestep, reset):
     """Exercise 9d2"""
     parameter_set = [
         SimulationParameters(
-            simulation_duration=5,
+            simulation_duration=10,
             use_drive_saturation=1,
             reverse = reverse,
             turn = turn,
             shes_got_legs = 1,
-            drive_left = 4.0,
-            drive_right = 4.0,
+            cR_body = [0.05, 0.16], #cR1, cR0
+            cR_limb = [0.131, 0.131], #cR1, cR0
+            drive_left = 3.3,
+            drive_right = 3.3,
             # ...
         )
         for turn in np.linspace(-.2,.2, 3)            
@@ -63,7 +64,7 @@ def exercise_9d2(world, timestep, reset):
             logs="./logs/9d2/simulation_{}.npz".format(simulation_i)
         )
 
-    plot_results.plot_reverse_trajectory()
+    plot_results.plot9d2()
     #TODO: Plot GPS Coordinates
     #TODO: Plot Spine Angles
     #TODO: Maybe compare spine angles to swimming forward?

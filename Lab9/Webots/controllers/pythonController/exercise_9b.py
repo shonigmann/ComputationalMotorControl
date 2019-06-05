@@ -13,12 +13,6 @@ def exercise_9b(world, timestep, reset):
     # Parameters
     
     n_joints = 10
-    
-    
-    
-    
-    
-    
     parameter_set = [
         SimulationParameters(
             simulation_duration=15,
@@ -35,7 +29,7 @@ def exercise_9b(world, timestep, reset):
             
         for test2 in np.linspace(2*np.pi/10-0.2, 2*np.pi/10+0.2, num=7)
             #We know nature is set to 2*pi/length. So we could test from lower than 2*pi/lengh to above of it. 
-            #Different proposals with 2*pi/lenght on the center value. 
+            #Different proposals with 2*pi/lenght on the center value.
     ]
 
     # Grid search
