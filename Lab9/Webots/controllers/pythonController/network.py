@@ -33,14 +33,9 @@ def network_ode(_time, state, parameters):
                           + b[i-n_body_joints*2]*np.sin(phases[i]+np.pi)
 
     if parameters.is_amplitude_gradient:
-        rhead = parameters.rhead
-        rtail = parameters.rtail
-
-        amplitude_gradient = (rhead - rtail) / n_body_joints
-        for i in range(n_body_joints):
-            d_amplitudes[i] = parameters.amplitudes_rate * (amplitude_gradient * i + rhead - amplitudes[i])
-            d_amplitudes[i + n_body_joints] = parameters.amplitudes_rate * \
-                                              (amplitude_gradient * i + rhead - amplitudes[i + n_body_joints])
+        amplitude_gradient = np.linspace(parameters.rhead, parameters.rtail, num=n_body_joints)
+        d_amplitudes[:n_body_joints] = parameters.amplitudes_rate * (amplitude_gradient - amplitudes[:n_body_joints])
+        d_amplitudes[n_body_joints: 2 * n_body_joints] = parameters.amplitudes_rate * (amplitude_gradient - amplitudes[n_body_joints: 2 * n_body_joints])
     else:
         d_amplitudes = parameters.amplitudes_rate * (parameters.nominal_amplitudes - amplitudes)
 

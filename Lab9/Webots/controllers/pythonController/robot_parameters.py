@@ -88,20 +88,20 @@ class RobotParameters(dict):
             index = i+self.n_body_joints*2
             #set weight from leg to body. leg 1 goes to body 1-5, leg 2 goes to body 6-10... etc
             for j in range(self.n_body_joints//2):
-                self.coupling_weights[i * self.n_body_joints // 2 + j,index] = limb_weight
+                self.coupling_weights[i * self.n_body_joints // 2 + j, index] = limb_weight
   
-        i=self.n_body_joints*2
-        self.coupling_weights[i+1, i] = weight
-        self.coupling_weights[i+2, i] = weight
+        i = self.n_body_joints * 2
+        self.coupling_weights[i + 1, i] = weight
+        self.coupling_weights[i + 2, i] = weight
         
-        self.coupling_weights[i, i+1] = weight
-        self.coupling_weights[i+3, i+1] = weight
+        self.coupling_weights[i, i + 1] = weight
+        self.coupling_weights[i + 3, i + 1] = weight
         
-        self.coupling_weights[i, i+2] = weight
-        self.coupling_weights[i+3, i+2] = weight
+        self.coupling_weights[i, i + 2] = weight
+        self.coupling_weights[i + 3, i + 2] = weight
         
-        self.coupling_weights[i+1, i+3] = weight
-        self.coupling_weights[i+2, i+3] = weight
+        self.coupling_weights[i + 1, i + 3] = weight
+        self.coupling_weights[i + 2, i + 3] = weight
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
