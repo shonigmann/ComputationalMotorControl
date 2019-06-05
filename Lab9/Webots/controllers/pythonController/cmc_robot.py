@@ -13,6 +13,7 @@ class SalamanderCMC(object):
     N_LEGS = 4
     X_HIGH_POS = 1.0
     X_LOW_POS = 0.25
+    SWIM = True
 
     def __init__(self, robot, n_iterations, parameters, logs="logs/log.npz"):
         super(SalamanderCMC, self).__init__()
@@ -142,18 +143,19 @@ class SalamanderCMC(object):
         pos = self.gps.getValues()
 
         if self.network.parameters.enable_transitions:
- #           if self.X_LOW_POS < pos[0] < self.X_HIGH_POS:
- #               self.network.parameters.drive_left = 2.0 + 4 * (pos[0] - 0.25)
- #               self.network.parameters.drive_right = 2.0 + 4 * (pos[0] - 0.25)
             if pos[0] > self.X_HIGH_POS:
+                if not self.SWIM:
+                    self.SWIM = True
+
                 self.network.parameters.drive_left = 4.0
                 self.network.parameters.drive_right = 4.0
             elif pos[0] < self.X_LOW_POS:
                 self.network.parameters.drive_left = 2.0
                 self.network.parameters.drive_right = 2.0
 
- #           self.network.parameters.drive_left -= pos[2] / 5
- #           self.network.parameters.drive_right += pos[2] / 5
+                if self.SWIM:
+                    self.network.state.phases = 1e-4 * np.random.ranf(self.network.parameters.n_oscillators)
+                    self.SWIM = False
 
             self.network.parameters.set_saturation_params(self.network.parameters)
             self.network.parameters.saturate_params()

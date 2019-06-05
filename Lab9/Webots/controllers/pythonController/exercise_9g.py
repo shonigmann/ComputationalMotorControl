@@ -16,8 +16,8 @@ def exercise_9g(world, timestep, reset):
             simulation_duration=40,
             use_drive_saturation=1,
             shes_got_legs=1,
-            cR_body=[0.052, 0.196],  # cR1, cR0
-            cR_limb=[0.105, 0.131],  # cR1, cR0
+            cR_body=[0.052, 0.157],#0.052  # cR1, cR0
+            cR_limb=[0.105, 0.105],#0.105  # cR1, cR0
             drive_left=2.0,
             drive_right=2.0,
             enable_transitions=True,

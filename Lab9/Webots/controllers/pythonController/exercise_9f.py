@@ -17,7 +17,7 @@ def exercise_9f(world, timestep, reset):
             #use_drive_saturation=1,
             shes_got_legs=1,
             #cR_body = [0.05, 0.16], #cR1, cR0
-            #cR_limb = [0.131, 0.131], #cR1, cR0
+            #cR_limb = [0.131, 0.131], #cR1, cR01
             #amplitudes_rate = 40,
             #drive_left = 1.6,
             #drive_right = 1.6,
