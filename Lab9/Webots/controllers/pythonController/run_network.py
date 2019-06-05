@@ -4,6 +4,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import cmc_pylog as pylog
+import plot_results
 from network import SalamanderNetwork
 from save_figures import save_figures
 from parse_args import save_plots
@@ -20,7 +21,12 @@ def run_network(duration, update=False, drive=0):
         drive=drive,
         amplitude_gradient=None,
         phase_lag=None,
-        turn=None,
+        turn=1.0,
+        use_drive_saturation = 1,
+        shes_got_legs=1,
+        cR_body = [0.05, 0.16], #cR1, cR0
+        cR_limb = [0.131, 0.131], #cR1, cR0
+        amplitudes_rate = 40,
     )
     network = SalamanderNetwork(timestep, parameters)
     osc_left = np.arange(10)
@@ -74,7 +80,7 @@ def run_network(duration, update=False, drive=0):
 
     # Implement plots of network results
     pylog.warning("Implement plots")
-
+    plot_results.main()
 
 def main(plot):
     """Main"""

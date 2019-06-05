@@ -1,3 +1,5 @@
+
+
 """Oscillator network ODE"""
 
 import numpy as np
@@ -12,14 +14,58 @@ def network_ode(_time, state, parameters):
     returns derivative of state (phases and amplitudes)
 
     """
+    n_body_joints = parameters.n_body_joints
     phases = state[:parameters.n_oscillators]
     amplitudes = state[parameters.n_oscillators:2*parameters.n_oscillators]
-    return np.concatenate([np.zeros_like(phases), np.zeros_like(amplitudes)])
+  
+    b = parameters.b
+    weights_size = parameters.coupling_weights[0].size
+    d_phases = np.zeros(weights_size)
+    d_amplitudes = np.zeros(parameters.n_oscillators)
+
+    for i in range(weights_size):
+        if i < n_body_joints * 2:
+            d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
+                                                               np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))
+        else:
+            d_phases[i] = 2*np.pi*parameters.freqs[i] + np.sum(amplitudes * parameters.coupling_weights[i] *
+                                                               np.sin(phases[:] - phases[i] - parameters.phase_bias[i]))\
+                          + b[i-n_body_joints*2]*np.sin(phases[i]+np.pi)
+
+    if parameters.is_amplitude_gradient:
+        rhead = parameters.rhead
+        rtail = parameters.rtail
+
+        amplitude_gradient = (rhead - rtail) / n_body_joints
+        for i in range(n_body_joints):
+            d_amplitudes[i] = parameters.amplitudes_rate * (amplitude_gradient * i + rhead - amplitudes[i])
+            d_amplitudes[i + n_body_joints] = parameters.amplitudes_rate * \
+                                              (amplitude_gradient * i + rhead - amplitudes[i + n_body_joints])
+    else:
+        d_amplitudes = parameters.amplitudes_rate * (parameters.nominal_amplitudes - amplitudes)
+
+    return np.concatenate([d_phases, d_amplitudes])
 
 
 def motor_output(phases, amplitudes):
     """Motor output"""
-    return np.zeros_like(phases) + np.zeros_like(amplitudes)
+    epsilon = 0.05
+    nb_body_joints = 10
+    nb_legs_joints = 4
+    q = np.zeros(nb_body_joints + nb_legs_joints)
+
+    for i in range(nb_body_joints):
+        q[i] = amplitudes[i] * (1 + np.cos(phases[i])) - amplitudes[i+nb_body_joints] * (1 + np.cos(phases[i + nb_body_joints]))
+
+    for i in range(nb_legs_joints):
+        if abs(amplitudes[i + 2 * nb_body_joints]) < epsilon:
+            #print("Swimming")
+            q[i + nb_body_joints] = 0
+        else:
+            #print("Walking")
+            q[i + nb_body_joints] = - phases[i + 2 * nb_body_joints]
+
+    return q
 
 
 class ODESolver(object):
@@ -95,7 +141,8 @@ class SalamanderNetwork(ODESolver):
         # Parameters
         self.parameters = RobotParameters(parameters)
         # Set initial state
-        self.state.phases = 1e-4*np.random.ranf(self.parameters.n_oscillators)
+        self.state.phases = 1e-4 * np.linspace(0, 1, num=self.parameters.n_oscillators)
+#        self.state.phases = 1e-4*np.random.ranf(self.parameters.n_oscillators)
 
     def step(self):
         """Step"""
