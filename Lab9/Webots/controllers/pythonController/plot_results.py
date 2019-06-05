@@ -543,19 +543,59 @@ def plot_9f4():
 
 def plot_9g():
     """Plot positions"""
-    pathfile = 'logs/9g/'
+    pathfile = 'logs/9g/water_to_land_0.npz'
 
-    for file in os.listdir(pathfile):
-        with np.load(pathfile + file) as data:
-            links = data["links"][:, 0, :]
-            joint_data = data["joints"]
-            timestep = float(data["timestep"])
+    with np.load(pathfile) as data:
+        links = data["links"][:, 0, :]
+        joint_data = data["joints"]
+        timestep = float(data["timestep"])
 
-            times = np.arange(0, timestep * np.shape(joint_data)[0], timestep)
+        times = np.arange(0, timestep * np.shape(joint_data)[0], timestep)
 
-            plt.figure("Trajectory")
-            plot_positions(times, link_data=links)
-            plt.show()
+ #       plt.figure("Trajectory")
+ #       plot_positions(times, link_data=links)
+ #       plt.show()
+
+        subplot = 1
+        color = 'b'
+
+        # Plot data
+        n_links = (len(joint_data[0, :, 0]))
+        network_output = joint_data[:, :, 0]
+        timestep = float(data["timestep"])
+
+        times = np.arange(0, timestep * np.shape(network_output)[0], timestep)
+
+        for i in range(n_links):
+            plt.subplot(15, 1, i + (subplot))
+
+            if i < 10:
+                title = "spine joints angle"
+            elif 10 <= i <= 14:
+                title = "limb joints angle"
+
+            plt.plot(times, network_output[:, i], color=color, label=title)
+
+            plt.ylabel("J%d" % i)
+
+            if i == 0:
+                plt.title(
+                    "Joint Commands During Transition water to land")  # \n %.1f deg avg. angle bias over period" % (turn_rev, avg_turn_bias))
+
+            if i == 5:
+                plt.ylabel("Spine joints angle\nJ%d" % i)
+
+            if i == 11:
+                plt.ylabel("Limb joints angle\nJ%d" % i)
+
+            if i < 9:
+                plt.xticks([])
+
+        plt.subplot(15, 1, 15)
+        plt.plot(times, links[:, 0])
+        plt.xlabel("t [s]")
+        plt.ylabel("x position [m]", rotation=0, labelpad=40)
+        plt.show()
 
 
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):

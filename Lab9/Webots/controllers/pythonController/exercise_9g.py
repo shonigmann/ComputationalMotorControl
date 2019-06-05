@@ -13,7 +13,7 @@ def exercise_9g(world, timestep, reset):
 
     parameter_set = [
         SimulationParameters(
-            simulation_duration=40,
+            simulation_duration=25,
             use_drive_saturation=1,
             shes_got_legs=1,
             cR_body=[0.052, 0.157],#0.052  # cR1, cR0
@@ -35,7 +35,7 @@ def exercise_9g(world, timestep, reset):
             parameters,
             timestep,
             int(1000 * parameters.simulation_duration / timestep),
-            logs="./logs/9g/simulation_{}.npz".format(simulation_i)
+            logs="./logs/9g/water_to_land_1{}.npz".format(simulation_i)
         )
 
     # plot_results.plot_turn_trajectory()
