@@ -24,7 +24,7 @@ def exercise_9b(world, timestep, reset):
             turn=0,
             # ...
         )
-        for test in np.linspace(3.0, 5.0, num=6)
+        for test in np.linspace(4.0, 5.0, num=6)
             #As seen in Ijspeer paper fig.1.B. 
             
         for test2 in np.linspace(2*np.pi/10-0.2, 2*np.pi/10+0.2, num=7)
